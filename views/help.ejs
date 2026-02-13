@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help & FAQ - Dog Breed Website</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #242436;
+      margin: 0;
+      padding: 0;
+    }
+
+    .help-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 30px auto;
+    }
+
+    .help-section h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .faq {
+      background: #fafafa;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 5px solid #ff9800;
+      border-radius: 8px;
+    }
+
+    .faq h3 {
+      color: #444;
+      margin: 0 0 8px;
+    }
+
+    .faq p {
+      margin: 0;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <section class="help-section">
+    <h2>Help & FAQ</h2>
+    <p>Here are some common questions to assist you:</p>
+
+    <% let faqs = [
+      { q: "How can I get results when searching for a dog's name?", a: "Type the dog's name in the search bar and press enter, and its full information will appear immediately." },
+      { q: "What should I do if I don't remember the breed name?", a: "You will get a breed list; you can browse it and select your dog." },
+      { q: "Is information available for all dog breeds on the website?", a: "Yes, we have added information for most popular Indian and international dog breeds." },
+      { q: "How can I view a dog's image?", a: "When you click on a breed, its image will be displayed along with the details." },
+      { q: "Where should I contact if I face a problem?", a: "You can go to the 'Contact Us' page and send your query." }
+    ]; %>
+
+    <% faqs.forEach(function(faq){ %>
+      <div class="faq">
+        <h3>Q. <%= faq.q %></h3>
+        <p><%= faq.a %></p>
+      </div>
+    <% }) %>
+  </section>
+</body>
+</html>

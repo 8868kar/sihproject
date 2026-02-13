@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cattle & Buffalo Breed Finder</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(#232336);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 50px auto;
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.container:hover {
+  transform: translateY(-5px);
+}
+
+h1 {
+  text-align: center;
+  color: #1b1b2f;
+  margin-bottom: 40px;
+  font-weight: 600;
+}
+
+label {
+  font-size: 18px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 10px;
+  color: #1b1b2f;
+}
+
+select {
+  width: 100%;
+  padding: 15px 12px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 2px solid #3498db;
+  outline: none;
+  transition: all 0.3s ease;
+  background: linear-gradient(145deg, #ffffff, #e6f0fa);
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+select:hover, select:focus {
+  box-shadow: 0 0 10px rgba(52,152,219,0.5);
+  transform: scale(1.02);
+}
+
+#result {
+  display: none;
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 15px;
+  background: #f0f8ff;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+#result.show {
+  opacity: 1;
+}
+
+#breedName {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.detail {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.detail span {
+  font-weight: 600;
+  color: #3498db;
+}
+
+.traits {
+  margin: 15px 0;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #3498db;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin: 5px 5px 0 0;
+  font-size: 13px;
+}
+
+.description-container {
+  margin-top: 15px;
+}
+
+.description-header {
+  font-weight: 600;
+  cursor: pointer;
+  color: #2c3e50;
+  user-select: none;
+}
+
+.description-content {
+  display: none;
+  font-size: 15px;
+  color: #34495e;
+  line-height: 1.7;
+  margin-top: 8px;
+}
+
+.description-content.show {
+  display: block;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.type-dairy { background-color: #2ecc71; }
+.type-dual { background-color: #e67e22; }
+
+@media(max-width:600px){
+  .container {
+    padding: 25px 20px;
+  }
+  #breedName {
+    font-size: 22px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Cattle & Buffalo Breed Finder</h1>
+
+  <label for="breedSelect">Choose a Breed:</label>
+  <select id="breedSelect" onchange="showBreedInfo()">
+    <option value="">-- Select Breed --</option>
+    <!-- Cattle -->
+    <option value="Gir">Gir (Cattle)</option>
+    <option value="Jersey">Jersey (Cattle)</option>
+    <option value="Banni">Banni (Cattle)</option>
+    <option value="Sahiwal">Sahiwal (Cattle)</option>
+    <option value="Red Sindhi">Red Sindhi (Cattle)</option>
+    <option value="Tharparkar">Tharparkar (Cattle)</option>
+    <!-- Buffalo -->
+    <option value="Murrah">Murrah (Buffalo)</option>
+    <option value="Jaffarabadi">Jaffarabadi (Buffalo)</option>
+    <option value="Nili Ravi">Nili Ravi (Buffalo)</option>
+    <option value="Bhadawari">Bhadawari (Buffalo)</option>
+    <option value="Mehsana">Mehsana (Buffalo)</option>
+    <option value="Surti">Surti (Buffalo)</option>
+  </select>
+
+  <div id="result">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div id="breedName"></div>
+    <div class="detail"><span>Origin:</span> <span id="origin"></span></div>
+    <div class="detail"><span>Type:</span> <span id="type"></span>
+      <span id="typeBadge" class="type-badge"></span>
+    </div>
+    <div class="detail"><span>Average Milk Yield:</span> <span id="milk"></span></div>
+    <div class="traits" id="traits"></div>
+
+    <div class="description-container">
+      <div class="description-header" onclick="toggleDescription()">More Description ▼</div>
+      <div class="description-content" id="moreDescription"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const breedData = {
+  "Gir": {
+    origin:"Gujarat, India",
+    type:"Dairy",
+    milk:"10-15 liters/day",
+    traits:["Heat tolerant", "Disease resistant", "High A2 milk"],
+    description:"Gir cattle are highly adaptable to hot climates. They produce high-quality A2 milk and are used in cross-breeding programs to improve other breeds."
+  },
+  "Jersey": {
+    origin:"Jersey, UK",
+    type:"Dairy",
+    milk:"20-25 liters/day",
+    traits:["High butterfat content", "Adaptable", "Small-sized"],
+    description:"Jersey cattle are small but very productive. Milk is rich in fat and protein, ideal for dairy products like cheese and butter."
+  },
+  "Banni": {
+    origin:"Kutch, India",
+    type:"Dairy/Draught",
+    milk:"8-12 liters/day",
+    traits:["Hardy", "Dual-purpose", "Survive arid climate"],
+    description:"Banni cattle are used for milk and draught. They have excellent endurance and can graze in sparse vegetation."
+  },
+  "Sahiwal": {
+    origin:"Punjab, India/Pakistan",
+    type:"Dairy",
+    milk:"12-20 liters/day",
+    traits:["Heat tolerant", "Efficient grazers", "High milk yield"],
+    description:"Sahiwal cattle are top dairy breed in India and Pakistan. Resistant to ticks and heat, suitable for tropical climates."
+  },
+  "Red Sindhi": {
+    origin:"Sindh, Pakistan",
+    type:"Dairy",
+    milk:"10-18 liters/day",
+    traits:["Calm temperament", "High-fat milk", "Consistent yield"],
+    description:"Red Sindhi cattle are popular for consistent milk yield and high-fat content. Suitable for small-scale farms."
+  },
+  "Tharparkar": {
+    origin:"Rajasthan, India",
+    type:"Dairy/Draught",
+    milk:"8-15 liters/day",
+    traits:["Dual-purpose", "Hardy", "Survive extreme temperatures"],
+    description:"Tharparkar cattle can be used for milk and light draught work. Very hardy and adaptable."
+  },
+  "Murrah": {
+    origin:"Haryana/Punjab, India",
+    type:"Dairy",
+    milk:"15-20 liters/day",
+    traits:["High milk yield", "Strong build", "Adaptable"],
+    description:"Murrah buffaloes are one of the highest milk-yielding breeds. Muscular and highly valued for dairy products."
+  },
+  "Jaffarabadi": {
+    origin:"Gujarat, India",
+    type:"Dairy",
+    milk:"12-16 liters/day",
+    traits:["Large size", "Calm", "Good milk quality"],
+    description:"Jaffarabadi buffaloes are calm and produce quality milk. Large and easy to manage."
+  },
+  "Nili Ravi": {
+    origin:"Pakistan",
+    type:"Dairy",
+    milk:"15-18 liters/day",
+    traits:["High butterfat", "Adaptable", "Productive"],
+    description:"Nili Ravi buffaloes produce milk rich in butterfat, highly productive and adapt well to various environments."
+  },
+  "Bhadawari": {
+    origin:"Uttar Pradesh, India",
+    type:"Dairy",
+    milk:"8-12 liters/day",
+    traits:["High ghee content", "Disease resistant", "Hardy"],
+    description:"Bhadawari buffaloes produce milk ideal for ghee. Hardy and resistant to many diseases."
+  },
+  "Mehsana": {
+    origin:"Gujarat, India",
+    type:"Dairy",
+    milk:"12-18 liters/day",
+    traits:["Balanced milk", "Calm temperament", "Efficient producers"],
+    description:"Mehsana buffaloes provide good milk yield and moderate fat content. Gentle and easy to manage."
+  },
+  "Surti": {
+    origin:"Gujarat, India",
+    type:"Dairy",
+    milk:"8-12 liters/day",
+    traits:["Moderate milk yield", "Adaptable", "Small-sized"],
+    description:"Surti buffaloes are small and adaptable, suitable for small farmers, providing quality milk."
+  }
+};
+
+function showBreedInfo(){
+  const select = document.getElementById('breedSelect');
+  const breedName = select.value;
+  if(breedData[breedName]){
+    const data = breedData[breedName];
+    document.getElementById('breedName').textContent = breedName;
+    document.getElementById('breadcrumb').textContent = `Home > ${breedName}`;
+    document.getElementById('origin').textContent = data.origin;
+    document.getElementById('type').textContent = data.type;
+    const typeBadge = document.getElementById('typeBadge');
+    typeBadge.textContent = data.type;
+    typeBadge.className = 'type-badge ' + (data.type.includes('Draught') ? 'type-dual':'type-dairy');
+
+    document.getElementById('milk').textContent = data.milk;
+
+    const traitsContainer = document.getElementById('traits');
+    traitsContainer.innerHTML = '';
+    data.traits.forEach(trait => {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.textContent = trait;
+      traitsContainer.appendChild(span);
+    });
+
+    document.getElementById('moreDescription').textContent = data.description;
+    document.getElementById('result').style.display = 'block';
+    setTimeout(()=>document.getElementById('result').classList.add('show'), 50);
+  } else {
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('result').classList.remove('show');
+  }
+}
+
+function toggleDescription(){
+  const desc = document.getElementById('moreDescription');
+  desc.classList.toggle('show');
+}
+</script>
+</body>
+</html>

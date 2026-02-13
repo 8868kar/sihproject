@@ -1,0 +1,2799 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dog Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: black;
+      padding: 20px;
+      text-align: center;
+      margin: 0;
+      padding: 0%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+      .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80px;
+        width: 100%;
+        position: sticky;
+        top: 0;
+        background-color: transparent;
+        /* background-color: red; */
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        z-index: 999;
+        /* margin-bottom: 25px; */
+    }
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0 2rem;
+        max-width: 1600px;
+    }
+    .navbar-logo {
+        font-size: 3rem;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .navbar-container .navbar-menu {
+        display: flex;
+        text-align: center;
+        gap: 1.5rem;
+        list-style: none;
+    }
+    .navbar-container .navbar-menu li a {
+        text-decoration: none;
+        color: #fff;
+        font-size: 1.3rem;
+        font-weight: 500;
+        padding: 3px 20px;
+        border-radius: 20px;
+        border: 2px solid transparent;
+        transition: all 0.7s ease;
+        white-space: nowrap;
+    }
+     .navbar-container .navbar-menu li a:hover,
+      .navbar-container .navbar-menu li a.active {
+        color: #162530;
+        background: rgba(188, 212, 229, 0.8);
+        border: 2px solid #fff;
+     }
+.navbar-toggle {
+    background: transparent;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    display: none;
+}
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: #fff;
+    transition: all 0.3s ease-in-out;
+
+}
+
+/* responsive style */
+@media(max-width: 880px){
+    .navbar {
+        backdrop-filter: none;
+    }
+
+    .navbar-container .navbar-menu {
+        /* display: none; */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.7rem !important;
+        position: absolute;
+        height: 100vh;
+        width: 250px;
+        top: 0;
+        right: 0;
+        padding: 5rem 1.5rem;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+    }
+    .navbar-container .navbar-menu.active {
+        display: flex;
+    }
+    .navbar-toggle {
+        display: block;
+        z-index: 999;
+    }
+    .navbar-toggle.active .bar:nth-child(2){
+        opacity: 0;
+    }
+    .navbar-toggle.active .bar:nth-child(1){
+        transform: translateY(8px) rotate(45deg);
+    }
+     .navbar-toggle.active .bar:nth-child(3){
+        transform: translateY(-8px) rotate(-45deg);
+    }
+}
+@media (max-width: 480px){
+    .navbar-container {
+        padding: 0 1rem;
+    }
+    .navbar-logo{
+        font-size: 1.7rem;
+    }
+    .navbar-container .navbar-menu li a {
+        font-size: 1.2rem;
+        padding: 3px 15px;
+    }
+}
+    .up {
+      width: 100%;
+      min-height: 100vh;
+      height: auto;
+      background-color: #1c1c28;
+      margin: 0%;
+      padding: 0%;
+    }
+    .up h1 {
+      color: white;
+      font-size: 35px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 500px;
+      width: 90%;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    select,
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+    }
+    #searchBtn {
+        width: 200px;
+        border: none;
+        outline: none;
+        position: relative;
+        z-index: 0;
+        height: 40px;
+        font-size: 20px;
+        border-radius: 10px;
+        /* background-color: #000; */
+        color: #fff;
+        cursor: pointer;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+     input[type="button"] {
+        width: 150px;
+        /* border: none; */
+        /* outline: none; */
+        /* position: relative; */
+        /* z-index: 0; */
+        height: 40px;
+        font-size: 20px;
+        border-radius: 10px;
+        background-color: #333;
+        color: #fff;
+        cursor: pointer;
+        font-family: Arial, Helvetica, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+     input[type="button"]:hover {
+        box-shadow: 1px 1px 10px #000;
+        background-color: #fff;
+        color: #333;
+    }
+    #searchBtn::after {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #333;
+        left: 0;
+        top: 0;
+        border-radius: 10px;
+    }
+    /* glow */
+
+    #searchBtn::before {
+        content: "";
+        background: linear-gradient(45deg,#ff7300,#fffb00,#48ff00,#00ffd5,#002bff,#ff00c8,#ff0000);
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        background-size: 600%;
+        z-index: -1;
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        filter: blur(8px);
+        /* animation */
+        animation: glowing 20s linear infinite;
+        transition: opacity .3s ease-in-out;
+        border-radius: 10px;
+        opacity: 1;
+    }
+    @keyframes glowing {
+        0% {background-position: 0 0;}
+        50% {background-position: 400% 0;}
+        0% {background-position: 0 0;}
+    }
+        #searchBtn:hover::before{
+            opacity: 1;
+        }
+        #searchBtn:active::after{
+            background: transparent;
+        }
+        #searchBtn:active{
+            color: #000;
+            font-weight: bold;
+        }
+
+    #details {
+      margin-top: 15px;
+      text-align: left;
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 30px;
+      display: none;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      select,
+      button {
+        font-size: 14px;
+      }
+    }
+    .header {
+      width: 100%;
+      height: 90vh;
+       background-image: url("https://cdn.wallpapersafari.com/0/88/ujTDLZ.jpg"); 
+        background-repeat: no-repeat;            
+        background-size: cover;                   
+
+       background-position: center;             
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+      overflow: hidden;
+    }
+    .header .left {
+      float: left;
+      width: 50%;
+      height: 100%;
+      color: white;
+      text-align: center;
+      /* padding-top: 20%; */
+      font-size: 40px;
+      font-weight: bold;
+      /* background-color: brown; */
+      display: flex;
+      justify-content: end;
+      align-items: center;
+    }
+     .header .left .s-r {
+      float: left;
+      width: 80%;
+      height: 100%;
+      color: white;
+      /* text-align: center; */
+      /* padding-top: 20%; */
+      font-size: 40px;
+      font-weight: bold;
+      /* background-color: gray; */
+      display: flex;
+      justify-content: start;
+      align-items: start;
+      flex-direction: column;
+      margin: 0%;
+    }
+    .header .left .s-r .wel {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      width: 80%;
+      height: 300px;
+      /* background-color: burlywood; */
+    }
+    .header .left .s-r .para {
+      /* display: flex;
+      justify-content: flex-start;
+      align-items: center; */
+      width: 80%;
+      height: 300px;
+      /* background-color: red; */
+      flex-direction: column;
+      margin: 0%;
+    }
+     .header .left .s-r .wel h1 {
+     color: sandybrown;
+      margin-right: 25px;
+      font-size: 70px;
+    }
+    .header .left .s-r h1 span{
+      color: white;
+      font-size: 115px;
+    }
+    .header .left .s-r .para h2 {
+       display: flex;
+      justify-content: start;
+      align-items: start;
+      width: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      color: sandybrown;
+      font-size: 30px;
+      
+    }
+    .header .left .s-r .para h2:nth-child(2){
+      margin-top: -25px;
+    }
+    .header .right {
+      float: right;
+      width: 50%;
+      height: 100%;
+    }
+   
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+        <div class="navbar-container">
+            <a href="" class="navbar-logo">🐶PetInfo</a>
+            <button class="navbar-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <ul class="navbar-menu">
+                <li><a href="/" class="active">Dog</a></li>
+                <li><a href="/cat">Cat</a></li>
+                <li><a href="/Cattle">Cattle & buffalo</a></li>
+                <li><a href="/pet">Pet Market</a></li>
+                <li><a href="/contact">Pet Appointment</a></li>
+                 <li><a href="/help">Help</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+  <div class="header">
+
+    <div class="left">
+      <div class="s-r">
+        <div class="wel">
+      <h1>Welcome To <span>PetInfo-</span></h1>
+        </div>
+      <!-- <h1>DogInfo</h1> -->
+       <div class="para">
+       <h2>Discover breeds, photos,<br></h2>
+       <h2> and care tips.</h2>
+       </div>
+      </div>
+    </div>
+   <div class="right">
+    
+   </div>
+  </div>
+  <div class="up">
+  
+  <h1>🐶 Dog Search</h1>
+  <div class="card">
+    <label for="breedSelect">Select Dog Breed:</label><br>
+    <select id="breedSelect" onchange="loadSubBreeds()"></select><br>
+
+    <div id="subBreedContainer" style="display:none;">
+      <label for="subBreedSelect">Select Sub-Breed:</label><br>
+      <select id="subBreedSelect"></select><br>
+    </div>
+
+    <button id="searchBtn">Search</button>
+    <div id="result" style="margin-top:12px;"></div>
+
+    <button id="anotherBtn" style="display:none; margin-top:10px;">Load Another Image</button>
+    <button id="detailsBtn" style="display:none; margin-top:10px;">Details</button>
+
+    <div id="details"></div>
+  </div>
+  </div>
+  
+
+<!-- add new page -->
+
+
+<!-- end -->
+  
+  <script>
+    const breedInfo = {
+      Pariah: {
+        origin: "Canada",
+        size: "Medium to Large",
+        temperament: "Friendly, Active, Outgoing",
+        life_span: "10-12 years",
+        coat: "Short, Dense, Water-resistant",
+        colors: "Black, Yellow, Chocolate",
+        grooming: "Low, weekly brushing",
+        exercise: "High, daily walks & play",
+        good_with_children: "Yes",
+        trainability: "High",
+        health_issues: "Hip dysplasia, obesity, eye conditions",
+        temperature_tolerance: {
+          winter: "Cold sensitive, provide warm shelter below 5°C",
+          spring: "Comfortable, outdoor activity recommended",
+          summer: "Heat sensitive, avoid >30°C, provide shade & water",
+          autumn: "Comfortable, enjoy outdoor activities"
+        }
+      },
+      samoyed: {
+    origin: "Siberia, Russia",
+    size: "Large",
+    temperament: "Friendly, Gentle, Playful",
+    life_span: "12-14 years",
+    coat: "Thick, White, Fluffy",
+    colors: "White",
+    grooming: "High, daily brushing",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, progressive retinal atrophy, hypothyroidism",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >25°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+schipperke: {
+    origin: "Belgium",
+    size: "Small",
+    temperament: "Curious, Lively, Alert",
+    life_span: "13-15 years",
+    coat: "Double, Dense, Black",
+    colors: "Black, Cream, Red",
+    grooming: "Moderate, weekly brushing",
+    exercise: "Moderate, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, patellar luxation, progressive retinal atrophy",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  schnauzer: {
+    origin: "Germany",
+    size: "Small to Large",
+    temperament: "Alert, Confident, Loyal",
+    life_span: "12-14 years",
+    coat: "Wiry, Dense",
+    colors: "Salt & Pepper, Black, Black & Silver",
+    grooming: "High, regular hand-stripping or clipping",
+    exercise: "Moderate, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, cataracts, pancreatitis",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  segugio_italiano: {
+    origin: "Italy",
+    size: "Medium",
+    temperament: "Loyal, Intelligent, Energetic",
+    life_span: "12-14 years",
+    coat: "Short, Smooth",
+    colors: "Red, Black & Tan, Blue",
+    grooming: "Low, occasional brushing",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, progressive retinal atrophy",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  setter: {
+    origin: "England",
+    size: "Medium to Large",
+    temperament: "Friendly, Energetic, Affectionate",
+    life_span: "12-14 years",
+    coat: "Long, Silky",
+    colors: "Liver, Black, Tri-color",
+    grooming: "High, regular brushing",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, progressive retinal atrophy",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  sharpei: {
+    origin: "China",
+    size: "Medium",
+    temperament: "Independent, Loyal, Calm",
+    life_span: "8-12 years",
+    coat: "Short, Bristly",
+    colors: "Red, Black, Blue, Fawn",
+    grooming: "Low, occasional brushing",
+    exercise: "Moderate, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, entropion, respiratory issues",
+    temperature_tolerance: {
+      winter: "Cold sensitive, provide warm shelter below 5°C",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  sheepdog: {
+    origin: "England",
+    size: "Large",
+    temperament: "Gentle, Intelligent, Playful",
+    life_span: "10-12 years",
+    coat: "Long, Shaggy",
+    colors: "Gray, Blue Merle, Black & White",
+    grooming: "High, regular brushing",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, cataracts, hypothyroidism",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+      affenpinscher: {
+    origin: "Germany",
+    size: "Small",
+    temperament: "Curious, Playful, Affectionate, Loyal, Confident",
+    life_span: "12-15 years",
+    coat: "Rough, Dense, Wiry",
+    colors: "Black, Silver, Belge",
+    grooming: "Moderate, weekly brushing and occasional hand stripping",
+    exercise: "Moderate, short daily walks and play sessions",
+    good_with_children: "Yes, but supervision recommended with very young children",
+    trainability: "Moderate, can be stubborn",
+    health_issues: "Hip dysplasia, patellar luxation, respiratory issues, dental problems",
+    temperature_tolerance: {
+        winter: "Cold sensitive, provide warm shelter below 5°C",
+        spring: "Comfortable, enjoys outdoor play",
+        summer: "Moderate heat tolerance, provide shade and water",
+        autumn: "Comfortable, enjoy outdoor activities"
+    }
+},
+African: {
+    origin: "Southern Africa",
+    size: "Medium",
+    temperament: "Intelligent, Loyal, Alert, Energetic, Independent",
+    life_span: "12-14 years",
+    coat: "Short, Dense, Smooth",
+    colors: "Brown, Black, Red, Fawn, Mixed",
+    grooming: "Low, occasional brushing",
+    exercise: "High, requires daily walks and mental stimulation",
+    good_with_children: "Yes, if properly socialized",
+    trainability: "Moderate, independent-minded",
+    health_issues: "Generally healthy, minor hip dysplasia possible",
+    temperature_tolerance: {
+        winter: "Comfortable, tolerates mild cold",
+        spring: "Comfortable, enjoys outdoor activity",
+        summer: "Heat tolerant, provide shade & water",
+        autumn: "Comfortable, enjoys outdoor activities"
+    }
+},
+Airedale: {
+  origin: "England",
+  size: "Medium to Large",
+  temperament: "Friendly, Intelligent, Outgoing",
+  life_span: "10-13 years",
+  coat: "Dense, Wiry, Double coat",
+  colors: "Tan with black saddle",
+  grooming: "Moderate, regular trimming needed",
+  exercise: "High, daily exercise and play",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, skin allergies",
+  temperature_tolerance: {
+    winter: "Can tolerate cold but needs shelter in extreme conditions",
+    spring: "Comfortable, active season",
+    summer: "Avoid excessive heat, provide shade & hydration",
+    autumn: "Very comfortable, ideal for outdoor activities"
+  }
+},
+
+Akita: {
+  origin: "Japan",
+  size: "Large",
+  temperament: "Loyal, Courageous, Dignified",
+  life_span: "10-13 years",
+  coat: "Thick double coat",
+  colors: "White, Brindle, Red, Sesame",
+  grooming: "High, heavy seasonal shedding",
+  exercise: "Moderate to High, needs regular walks",
+  good_with_children: "Generally good with family, supervision advised",
+  trainability: "Moderate, independent nature",
+  health_issues: "Hip dysplasia, thyroid issues, bloat",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance, thrives in snow",
+    spring: "Comfortable, shedding season",
+    summer: "Heat sensitive, avoid >28°C, keep cool",
+    autumn: "Comfortable, energetic outdoors"
+  }
+},
+
+Appenzeller: {
+  origin: "Switzerland",
+  size: "Medium to Large",
+  temperament: "Energetic, Lively, Fearless",
+  life_span: "12-14 years",
+  coat: "Short, dense, tricolored coat",
+  colors: "Black, White, Tan (Tricolor)",
+  grooming: "Low, occasional brushing",
+  exercise: "High, working breed needs daily activity",
+  good_with_children: "Yes, with active families",
+  trainability: "High, intelligent working dog",
+  health_issues: "Generally healthy, minor hip dysplasia",
+  temperature_tolerance: {
+    winter: "Good tolerance, enjoys cold weather",
+    spring: "Comfortable and active",
+    summer: "Avoid extreme heat, needs shade",
+    autumn: "Comfortable, energetic"
+  }
+},
+
+Australian: {
+  origin: "United States (despite the name)",
+  size: "Medium",
+  temperament: "Smart, Work-oriented, Energetic",
+  life_span: "12-15 years",
+  coat: "Medium length, double coat",
+  colors: "Blue merle, Red merle, Black, Red",
+  grooming: "Moderate, weekly brushing",
+  exercise: "Very High, needs mental and physical stimulation",
+  good_with_children: "Yes, excellent family dog",
+  trainability: "Very High",
+  health_issues: "Hip dysplasia, epilepsy, eye disorders",
+  temperature_tolerance: {
+    winter: "Good tolerance, loves outdoor activity",
+    spring: "Very active, ideal season",
+    summer: "Heat sensitive, avoid >30°C, hydrate",
+    autumn: "Energetic and comfortable"
+  }
+},
+
+Bakharwal: {
+  origin: "India (Kashmir & Himalayan region)",
+  size: "Large",
+  temperament: "Protective, Loyal, Fearless",
+  life_span: "9-11 years",
+  coat: "Thick, long double coat",
+  colors: "Black, Tan, White",
+  grooming: "High, requires regular brushing",
+  exercise: "Moderate to High, bred for guarding livestock",
+  good_with_children: "Protective, needs supervision",
+  trainability: "Moderate, strong-willed",
+  health_issues: "Hip dysplasia, joint problems",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance, thrives in snow",
+    spring: "Comfortable, active season",
+    summer: "Struggles in hot climate, needs cool shelter",
+    autumn: "Comfortable, energetic outdoors"
+  }
+},
+
+
+      german: {
+        origin: "Germany",
+        size: "Large",
+        temperament: "Intelligent, Loyal, Courageous",
+        life_span: "9-13 years",
+        coat: "Double coat, dense",
+        colors: "Black & Tan, Sable, White",
+        grooming: "Moderate, weekly brushing",
+        exercise: "High, active lifestyle needed",
+        good_with_children: "Yes",
+        trainability: "High",
+        health_issues: "Hip dysplasia, elbow dysplasia, degenerative myelopathy",
+        temperature_tolerance: {
+          winter: "Tolerates cold well, provide shelter below -5°C",
+          spring: "Comfortable, enjoy outdoor walks",
+          summer: "Moderate heat tolerance, avoid peak sun",
+          autumn: "Comfortable, outdoor activities fine"
+        }
+      },
+      bulldog: {
+        origin: "England",
+        size: "Medium",
+        temperament: "Docile, Willful, Friendly",
+        life_span: "8-10 years",
+        coat: "Short, Fine",
+        colors: "Brindle, White, Fawn, Piebald",
+        grooming: "Low, occasional brushing",
+        exercise: "Low to moderate, short walks",
+        good_with_children: "Yes",
+        trainability: "Moderate",
+        health_issues: "Brachycephalic issues, hip dysplasia, skin infections",
+        temperature_tolerance: {
+          winter: "Cold sensitive, needs warm clothing below 10°C",
+          spring: "Comfortable, light activity recommended",
+          summer: "Very heat sensitive, avoid >25°C, provide shade & water",
+          autumn: "Comfortable, enjoy outdoor activities"
+        }
+      },
+      beagle: {
+        origin: "England",
+        size: "Small to Medium",
+        temperament: "Curious, Friendly, Merry",
+        life_span: "12-15 years",
+        coat: "Short, Hard",
+        colors: "Tri-color, Lemon, Red & White",
+        grooming: "Low, weekly brushing",
+        exercise: "Moderate to High, daily walks",
+        good_with_children: "Yes",
+        trainability: "Moderate",
+        health_issues: "Ear infections, obesity, hip dysplasia",
+        temperature_tolerance: {
+          winter: "Moderate cold tolerance, provide shelter below 5°C",
+          spring: "Comfortable, outdoor activities fine",
+          summer: "Heat sensitive, avoid peak sun",
+          autumn: "Comfortable"
+        }
+      },
+      pug: {
+        origin: "China",
+        size: "Small",
+        temperament: "Charming, Mischievous, Loving",
+        life_span: "12-15 years",
+        coat: "Short, Fine",
+        colors: "Fawn, Black, Apricot",
+        grooming: "Low, occasional brushing",
+        exercise: "Low to moderate, short walks",
+        good_with_children: "Yes",
+        trainability: "Moderate",
+        health_issues: "Brachycephalic issues, eye problems, obesity",
+        temperature_tolerance: {
+          winter: "Cold sensitive, provide warm shelter below 10°C",
+          spring: "Comfortable",
+          summer: "Very heat sensitive, avoid >25°C",
+          autumn: "Comfortable"
+        }
+      },
+      boxer: {
+        origin: "Germany",
+        size: "Medium to Large",
+        temperament: "Friendly, Energetic, Playful, Loyal, Intelligent",
+        life_span: "10-12 years",
+        coat: "Short, Smooth",
+        colors: "Fawn, Brindle, White",
+        grooming: "Low, regular brushing",
+        exercise: "High, requires daily exercise",
+        good_with_children: "Yes",
+        trainability: "Moderate to High",
+        health_issues: "Hip dysplasia, heart conditions, cancers",
+        temperature_tolerance: {
+          winter: "Cold sensitive, provide warm clothing below 10°C",
+          spring: "Comfortable, light activity recommended",
+          summer: "Heat sensitive, avoid >30°C, provide shade and water",
+          autumn: "Comfortable, enjoy outdoor activities"
+        }
+      },
+      shiba_inu: {
+    origin: "Japan",
+    size: "Small to Medium",
+    temperament: "Alert, Independent, Loyal",
+    life_span: "12-15 years",
+    coat: "Double, Dense",
+    colors: "Red, Black & Tan, Cream, Sesame",
+    grooming: "Moderate, regular brushing",
+    exercise: "Moderate, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, patellar luxation, allergies",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  shih_tzu: {
+    origin: "China",
+    size: "Small",
+    temperament: "Affectionate, Outgoing, Playful",
+    life_span: "10-16 years",
+    coat: "Long, Flowing",
+    colors: "Various",
+    grooming: "High, daily brushing",
+    exercise: "Low to Moderate, daily walks",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, respiratory issues, dental problems",
+    temperature_tolerance: {
+      winter: "Cold sensitive, provide warm shelter below 5°C",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  spaniel: {
+    origin: "England",
+    size: "Medium",
+    temperament: "Affectionate, Gentle, Energetic",
+    life_span: "12-15 years",
+    coat: "Medium, Silky",
+    colors: "Black, Liver, Red, Various",
+    grooming: "Moderate, regular brushing",
+    exercise: "Moderate, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Ear infections, hip dysplasia, progressive retinal atrophy",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  spitz: {
+    origin: "Germany",
+    size: "Small to Medium",
+    temperament: "Lively, Intelligent, Loyal",
+    life_span: "12-15 years",
+    coat: "Double, Fluffy",
+    colors: "White, Black, Brown, Various",
+    grooming: "Moderate, regular brushing",
+    exercise: "Moderate, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, patellar luxation, dental issues",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  springer: {
+    origin: "England",
+    size: "Medium",
+    temperament: "Energetic, Affectionate, Intelligent",
+    life_span: "12-14 years",
+    coat: "Medium, Wavy",
+    colors: "Black & White, Liver & White, Tri-color",
+    grooming: "High, regular brushing",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, ear infections, eye conditions",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, enjoys outdoor activities",
+      summer: "Heat sensitive, avoid >30°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  st_bernard: {
+    origin: "Switzerland",
+    size: "Giant",
+    temperament: "Gentle, Friendly, Patient",
+    life_span: "8-10 years",
+    coat: "Long or Short, Dense",
+    colors: "Red & White, Brown & White",
+    grooming: "Moderate, regular brushing",
+    exercise: "Moderate, daily walks",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Hip dysplasia, heart problems, bloat",
+    temperature_tolerance: {
+      winter: "Cold tolerant, ideal for snow",
+      spring: "Comfortable, enjoys outdoor activity",
+      summer: "Heat sensitive, avoid >25°C, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  terrier: {
+    origin: "UK/Ireland",
+    size: "Small to Medium",
+    temperament: "Energetic, Feisty, Intelligent",
+    life_span: "12-15 years",
+    coat: "Varies: Wire, Smooth, or Curly",
+    colors: "Varies",
+    grooming: "Moderate to High depending on coat",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "Moderate to High",
+    health_issues: "Hip dysplasia, skin allergies, eye conditions",
+    temperature_tolerance: {
+      winter: "Cold tolerant, provide warm shelter if extreme",
+      spring: "Comfortable, enjoy outdoor activities",
+      summer: "Heat sensitive, provide shade & water",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+tervuren: {
+    origin: "Belgium",
+    size: "Large",
+    temperament: "Intelligent, Loyal, Alert",
+    life_span: "12-14 years",
+    coat: "Long, Dense",
+    colors: "Fawn, Mahogany, Black Mask",
+    grooming: "High, regular brushing",
+    exercise: "High, daily walks & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, elbow dysplasia, epilepsy",
+    temperature_tolerance: {
+      winter: "Cold tolerant, enjoys snow",
+      spring: "Comfortable, outdoor activities fine",
+      summer: "Heat sensitive, avoid >30°C",
+      autumn: "Comfortable, enjoy outdoor activities"
+    }
+  },
+
+  vizsla: {
+    origin: "Hungary",
+    size: "Medium to Large",
+    temperament: "Affectionate, Energetic, Loyal",
+    life_span: "10-14 years",
+    coat: "Short, Smooth",
+    colors: "Golden Rust",
+    grooming: "Low, occasional brushing",
+    exercise: "High, daily runs & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, epilepsy, cancer",
+    temperature_tolerance: {
+      winter: "Cold sensitive, provide warm shelter <5°C",
+      spring: "Comfortable, enjoy outdoor activities",
+      summer: "Heat sensitive, avoid >30°C",
+      autumn: "Comfortable"
+    }
+  },
+
+  waterdog: {
+    origin: "Spain",
+    size: "Medium to Large",
+    temperament: "Intelligent, Energetic, Friendly",
+    life_span: "10-14 years",
+    coat: "Curly, Dense",
+    colors: "Black, Brown, White",
+    grooming: "High, regular trimming",
+    exercise: "High, daily walks & swimming",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, ear infections",
+    temperature_tolerance: {
+      winter: "Cold tolerant",
+      spring: "Comfortable, enjoy outdoor activities",
+      summer: "Heat sensitive, provide shade & water",
+      autumn: "Comfortable"
+    }
+  },
+
+  weimaraner: {
+    origin: "Germany",
+    size: "Large",
+    temperament: "Energetic, Friendly, Intelligent",
+    life_span: "10-13 years",
+    coat: "Short, Smooth",
+    colors: "Silver Grey, Grey",
+    grooming: "Low, occasional brushing",
+    exercise: "High, daily runs & play",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Hip dysplasia, bloat, eye conditions",
+    temperature_tolerance: {
+      winter: "Cold sensitive, provide warm shelter <5°C",
+      spring: "Comfortable, enjoy outdoor activities",
+      summer: "Heat sensitive, avoid >30°C",
+      autumn: "Comfortable"
+    }
+  },
+
+  whippet: {
+    origin: "England",
+    size: "Medium",
+    temperament: "Gentle, Friendly, Energetic",
+    life_span: "12-15 years",
+    coat: "Short, Smooth",
+    colors: "Various",
+    grooming: "Low, occasional brushing",
+    exercise: "High, daily runs",
+    good_with_children: "Yes",
+    trainability: "High",
+    health_issues: "Heart conditions, bloat",
+    temperature_tolerance: {
+      winter: "Cold sensitive, provide warm clothing <5°C",
+      spring: "Comfortable, enjoy outdoor activities",
+      summer: "Heat sensitive, avoid >30°C",
+      autumn: "Comfortable"
+    }
+  },
+
+  wolfhound: {
+    origin: "Ireland",
+    size: "Giant",
+    temperament: "Gentle, Loyal, Dignified",
+    life_span: "6-10 years",
+    coat: "Rough or Smooth",
+    colors: "Gray, Brindle, Fawn, Black, White",
+    grooming: "Moderate, occasional brushing",
+    exercise: "High, daily walks & runs",
+    good_with_children: "Yes",
+    trainability: "Moderate",
+    health_issues: "Heart problems, bloat, hip dysplasia",
+    temperature_tolerance: {
+      winter: "Cold tolerant",
+      spring: "Comfortable",
+      summer: "Heat sensitive, provide shade & water",
+      autumn: "Comfortable"
+    }
+  },
+  otterhound: {
+  origin: "England",
+  size: "Large",
+  temperament: "Friendly, Amiable, Even-tempered",
+  life_span: "10-13 years",
+  coat: "Rough, Dense, Double coat",
+  colors: "Wheaten, Black and Tan, Grizzle",
+  grooming: "Moderate, regular brushing",
+  exercise: "High, loves swimming and long walks",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, bloat, ear infections",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable, active outdoors",
+    summer: "Heat sensitive, avoid long exposure",
+    autumn: "Comfortable, enjoy outdoor activities"
+  }
+},
+
+ovcharka: {
+  origin: "Russia / Caucasus region",
+  size: "Large to Giant",
+  temperament: "Protective, Fearless, Strong-willed",
+  life_span: "10-12 years",
+  coat: "Thick, Double coat",
+  colors: "Gray, Fawn, White, Brindle",
+  grooming: "Moderate, regular brushing",
+  exercise: "Moderate, requires space",
+  good_with_children: "Protective but supervision needed",
+  trainability: "Low to Moderate, independent",
+  health_issues: "Hip dysplasia, heart issues",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable outdoors",
+    summer: "Heat sensitive, provide shade",
+    autumn: "Comfortable, enjoys activity"
+  }
+},
+
+papillon: {
+  origin: "France/Belgium",
+  size: "Small",
+  temperament: "Friendly, Alert, Energetic",
+  life_span: "12-16 years",
+  coat: "Long, Silky",
+  colors: "White with patches of black, red, sable",
+  grooming: "Moderate, regular brushing",
+  exercise: "Moderate, daily walks and play",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Patellar luxation, dental problems",
+  temperature_tolerance: {
+    winter: "Needs warm shelter below 5°C",
+    spring: "Comfortable, playful outdoors",
+    summer: "Sensitive to heat, provide shade",
+    autumn: "Comfortable, enjoys activity"
+  }
+},
+
+pekingese: {
+  origin: "China",
+  size: "Small",
+  temperament: "Affectionate, Regal, Loyal",
+  life_span: "12-15 years",
+  coat: "Long, Dense, Double coat",
+  colors: "Gold, Red, Cream, Black",
+  grooming: "High, daily grooming",
+  exercise: "Low, short daily walks",
+  good_with_children: "Yes, better with older children",
+  trainability: "Low, independent",
+  health_issues: "Brachycephalic issues, heart problems, eye conditions",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs warm shelter",
+    spring: "Comfortable, short play outside",
+    summer: "Heat intolerant, avoid >28°C",
+    autumn: "Comfortable, enjoys outdoor activity"
+  }
+},
+
+pembroke: {
+  origin: "Wales",
+  size: "Small to Medium",
+  temperament: "Intelligent, Friendly, Loyal",
+  life_span: "12-15 years",
+  coat: "Short, Double coat",
+  colors: "Red, Sable, Fawn, Black & Tan with white",
+  grooming: "Moderate, regular brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye issues",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable, playful outdoors",
+    summer: "Heat sensitive, provide water & shade",
+    autumn: "Comfortable, enjoys activity"
+  }
+},
+
+pinscher: {
+  origin: "Germany",
+  size: "Medium",
+  temperament: "Energetic, Fearless, Alert",
+  life_span: "12-14 years",
+  coat: "Short, Smooth",
+  colors: "Black, Red, Fawn",
+  grooming: "Low, occasional brushing",
+  exercise: "High, requires daily activity",
+  good_with_children: "Yes with supervision",
+  trainability: "High",
+  health_issues: "Hip dysplasia, heart issues",
+  temperature_tolerance: {
+    winter: "Cold sensitive, provide warm shelter",
+    spring: "Comfortable, active",
+    summer: "Heat sensitive, avoid midday sun",
+    autumn: "Comfortable, playful"
+  }
+},
+
+pitbull: {
+  origin: "United States",
+  size: "Medium",
+  temperament: "Loyal, Courageous, Affectionate",
+  life_span: "12-16 years",
+  coat: "Short, Smooth",
+  colors: "Variety of colors",
+  grooming: "Low",
+  exercise: "High, daily activity needed",
+  good_with_children: "Yes, when socialized",
+  trainability: "High",
+  health_issues: "Hip dysplasia, skin allergies",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs coat below 5°C",
+    spring: "Comfortable, playful outdoors",
+    summer: "Heat sensitive, provide shade",
+    autumn: "Comfortable, enjoys outdoor activities"
+  }
+},
+
+pointer: {
+  origin: "England",
+  size: "Medium to Large",
+  temperament: "Energetic, Loyal, Gentle",
+  life_span: "12-15 years",
+  coat: "Short, Smooth",
+  colors: "Liver, Lemon, Black, Orange with white",
+  grooming: "Low, weekly brushing",
+  exercise: "Very High, requires long runs",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye problems",
+  temperature_tolerance: {
+    winter: "Cold sensitive, provide shelter",
+    spring: "Comfortable, great for hunting",
+    summer: "Heat sensitive, avoid long sun exposure",
+    autumn: "Comfortable, active outdoors"
+  }
+},
+
+pomeranian: {
+  origin: "Germany/Poland",
+  size: "Small",
+  temperament: "Playful, Friendly, Intelligent",
+  life_span: "12-16 years",
+  coat: "Long, Fluffy, Double coat",
+  colors: "Orange, Black, White, Blue, Cream",
+  grooming: "High, daily brushing",
+  exercise: "Moderate, short daily walks",
+  good_with_children: "Yes, better with older children",
+  trainability: "High",
+  health_issues: "Dental issues, luxating patella, tracheal collapse",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable outdoors",
+    summer: "Heat sensitive, avoid hot conditions",
+    autumn: "Comfortable, playful outdoors"
+  }
+},
+poodle: {
+  origin: "Germany/France",
+  size: "Standard, Miniature, Toy",
+  temperament: "Intelligent, Active, Alert",
+  life_span: "12-15 years",
+  coat: "Curly, Dense",
+  colors: "White, Black, Apricot, Brown, Cream",
+  grooming: "High, requires regular grooming & clipping",
+  exercise: "High, daily walks and play",
+  good_with_children: "Yes",
+  trainability: "Very High",
+  health_issues: "Hip dysplasia, epilepsy, eye issues",
+  temperature_tolerance: {
+    winter: "Good cold tolerance with coat, may need sweater when clipped",
+    spring: "Comfortable, loves outdoor play",
+    summer: "Heat sensitive, provide shade & water",
+    autumn: "Comfortable, enjoys activities"
+  }
+},
+
+pug: {
+  origin: "China",
+  size: "Small",
+  temperament: "Charming, Playful, Stubborn",
+  life_span: "12-15 years",
+  coat: "Short, Smooth",
+  colors: "Fawn, Black, Apricot",
+  grooming: "Low, occasional brushing",
+  exercise: "Low to Moderate, short walks",
+  good_with_children: "Yes",
+  trainability: "Moderate, can be stubborn",
+  health_issues: "Brachycephalic issues, obesity, eye problems",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs warm shelter",
+    spring: "Comfortable, short walks",
+    summer: "Heat intolerant, avoid hot weather",
+    autumn: "Comfortable, enjoys outdoor play"
+  }
+},
+
+puggle: {
+  origin: "United States",
+  size: "Small to Medium",
+  temperament: "Affectionate, Friendly, Playful",
+  life_span: "10-15 years",
+  coat: "Short, Smooth",
+  colors: "Tan, Black, Fawn",
+  grooming: "Low, minimal grooming",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, breathing issues, eye conditions",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs warmth",
+    spring: "Comfortable, active outdoors",
+    summer: "Heat sensitive, avoid long exposure",
+    autumn: "Comfortable, enjoys outdoor activities"
+  }
+},
+
+pyrenees: {
+  origin: "France/Spain",
+  size: "Large",
+  temperament: "Calm, Patient, Protective",
+  life_span: "10-12 years",
+  coat: "Thick, Double coat",
+  colors: "White, sometimes with tan/gray markings",
+  grooming: "High, regular brushing needed",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "Moderate, independent",
+  health_issues: "Hip dysplasia, bloat",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable, enjoys outdoors",
+    summer: "Heat sensitive, needs shade & water",
+    autumn: "Comfortable, enjoys outdoor activities"
+  }
+},
+
+rajapalayam: {
+  origin: "India",
+  size: "Large",
+  temperament: "Loyal, Brave, Protective",
+  life_span: "10-12 years",
+  coat: "Short, Smooth",
+  colors: "Milky White",
+  grooming: "Low, minimal grooming",
+  exercise: "High, requires daily runs",
+  good_with_children: "Protective, supervision required",
+  trainability: "Moderate",
+  health_issues: "Deafness, skin issues",
+  temperature_tolerance: {
+    winter: "Tolerates mild cold",
+    spring: "Comfortable, active outdoors",
+    summer: "Heat tolerant, but needs hydration",
+    autumn: "Comfortable, enjoys activity"
+  }
+},
+
+redbone: {
+  origin: "United States",
+  size: "Medium to Large",
+  temperament: "Affectionate, Energetic, Even-tempered",
+  life_span: "12-15 years",
+  coat: "Short, Smooth",
+  colors: "Solid Red",
+  grooming: "Low, occasional brushing",
+  exercise: "High, requires daily activity",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, ear infections",
+  temperature_tolerance: {
+    winter: "Needs protection in extreme cold",
+    spring: "Comfortable, active outdoors",
+    summer: "Heat sensitive, provide shade",
+    autumn: "Comfortable, enjoys outdoor play"
+  }
+},
+
+retriever: {
+  origin: "United Kingdom",
+  size: "Medium to Large",
+  temperament: "Gentle, Friendly, Loyal",
+  life_span: "10-12 years",
+  coat: "Dense, Water-resistant double coat",
+  colors: "Golden, Cream, Black",
+  grooming: "Moderate, weekly brushing",
+  exercise: "High, loves outdoor play",
+  good_with_children: "Yes",
+  trainability: "Very High",
+  health_issues: "Hip dysplasia, obesity, cancer",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable, outdoor friendly",
+    summer: "Heat sensitive, avoid midday sun",
+    autumn: "Comfortable, enjoys outdoor play"
+  }
+},
+
+ridgeback: {
+  origin: "Southern Africa",
+  size: "Large",
+  temperament: "Confident, Loyal, Intelligent",
+  life_span: "10-12 years",
+  coat: "Short, Dense",
+  colors: "Wheaten",
+  grooming: "Low, occasional brushing",
+  exercise: "High, requires daily running",
+  good_with_children: "Yes",
+  trainability: "Moderate, independent",
+  health_issues: "Hip dysplasia, dermoid sinus",
+  temperature_tolerance: {
+    winter: "Mild cold tolerance, needs warmth in extreme cold",
+    spring: "Comfortable, loves activity",
+    summer: "Heat tolerant but avoid dehydration",
+    autumn: "Comfortable, active outdoors"
+  }
+},
+
+rottweiler: {
+  origin: "Germany",
+  size: "Large",
+  temperament: "Confident, Courageous, Loyal",
+  life_span: "9-10 years",
+  coat: "Short, Dense",
+  colors: "Black with Tan markings",
+  grooming: "Low, weekly brushing",
+  exercise: "High, requires strong activity",
+  good_with_children: "Yes with training",
+  trainability: "High",
+  health_issues: "Hip dysplasia, heart issues, cancer",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable, enjoys activity",
+    summer: "Heat sensitive, avoid peak heat",
+    autumn: "Comfortable, active outdoors"
+  }
+},
+
+saluki: {
+  origin: "Middle East",
+  size: "Medium to Large",
+  temperament: "Gentle, Independent, Reserved",
+  life_span: "12-14 years",
+  coat: "Smooth or feathered",
+  colors: "White, Cream, Fawn, Gold, Red, Black",
+  grooming: "Low, occasional brushing",
+  exercise: "High, loves running",
+  good_with_children: "Yes, with supervision",
+  trainability: "Moderate",
+  health_issues: "Heart problems, hip dysplasia, eye issues",
+  temperature_tolerance: {
+    winter: "Needs protection from cold",
+    spring: "Comfortable, active outdoors",
+    summer: "Heat tolerant, provide hydration",
+    autumn: "Comfortable, enjoys outdoor activities"
+  }
+},
+hound: {
+  origin: "Worldwide (group of breeds)",
+  size: "Small to Large (varies)",
+  temperament: "Energetic, Alert, Intelligent",
+  life_span: "10-14 years",
+  coat: "Varies (short, smooth, or long)",
+  colors: "Varies by breed",
+  grooming: "Low to High depending on breed",
+  exercise: "High, bred for hunting",
+  good_with_children: "Yes, with proper socialization",
+  trainability: "Moderate to High",
+  health_issues: "Hip dysplasia, ear infections",
+  temperature_tolerance: {
+    winter: "Varies, many tolerate cold",
+    spring: "Comfortable, active outdoors",
+    summer: "Heat sensitive in long-haired breeds",
+    autumn: "Comfortable, enjoys outdoor activities"
+  }
+},
+
+husky: {
+  origin: "Siberia",
+  size: "Medium",
+  temperament: "Energetic, Friendly, Mischievous",
+  life_span: "12-14 years",
+  coat: "Thick double coat",
+  colors: "Black, White, Gray, Red",
+  grooming: "High, frequent shedding",
+  exercise: "Very High, requires daily running",
+  good_with_children: "Yes",
+  trainability: "Moderate, independent",
+  health_issues: "Hip dysplasia, eye issues",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable, loves outdoor play",
+    summer: "Heat sensitive, avoid >25°C",
+    autumn: "Comfortable, energetic"
+  }
+},keeshond: {
+  origin: "Netherlands",
+  size: "Medium",
+  temperament: "Alert, Friendly, Outgoing",
+  life_span: "12-15 years",
+  coat: "Thick, Double coat",
+  colors: "Gray, Black, Cream",
+  grooming: "High, regular brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, epilepsy",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, avoid hot weather",
+    autumn: "Comfortable, active outdoors"
+  }
+},
+
+kelpie: {
+  origin: "Australia",
+  size: "Medium",
+  temperament: "Energetic, Intelligent, Loyal",
+  life_span: "12-15 years",
+  coat: "Short, Dense",
+  colors: "Black, Red, Chocolate, Fawn",
+  grooming: "Low, occasional brushing",
+  exercise: "Very High, needs work & activity",
+  good_with_children: "Yes",
+  trainability: "Very High",
+  health_issues: "Hip dysplasia, eye issues",
+  temperature_tolerance: {
+    winter: "Tolerates mild cold",
+    spring: "Comfortable, loves outdoors",
+    summer: "Tolerates heat, provide water",
+    autumn: "Comfortable, active outdoors"
+  }
+},
+
+kombai: {
+  origin: "India (Tamil Nadu)",
+  size: "Medium to Large",
+  temperament: "Protective, Brave, Loyal",
+  life_span: "12-15 years",
+  coat: "Short, Smooth",
+  colors: "Brown, Red with black mask",
+  grooming: "Low, minimal grooming",
+  exercise: "High, needs open space",
+  good_with_children: "Protective, needs supervision",
+  trainability: "Moderate",
+  health_issues: "Generally healthy, occasional skin issues",
+  temperature_tolerance: {
+    winter: "Comfortable in mild cold",
+    spring: "Comfortable, active",
+    summer: "Heat tolerant, ensure hydration",
+    autumn: "Comfortable, active outdoors"
+  }
+},
+
+komondor: {
+  origin: "Hungary",
+  size: "Large",
+  temperament: "Protective, Calm, Loyal",
+  life_span: "10-12 years",
+  coat: "Long, Corded (dreadlock-like)",
+  colors: "White",
+  grooming: "High, requires coat care",
+  exercise: "Moderate, needs walks & guarding activity",
+  good_with_children: "Yes, protective",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, bloat",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, needs shade",
+    autumn: "Comfortable, enjoys outdoor activity"
+  }
+},
+
+kuvasz: {
+  origin: "Hungary",
+  size: "Large",
+  temperament: "Protective, Loyal, Brave",
+  life_span: "10-12 years",
+  coat: "Thick, Double coat",
+  colors: "White",
+  grooming: "Moderate, regular brushing",
+  exercise: "Moderate to High",
+  good_with_children: "Yes, protective",
+  trainability: "Moderate, independent",
+  health_issues: "Hip dysplasia, bloat",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, avoid heat",
+    autumn: "Comfortable"
+  }
+},
+
+labradoodle: {
+  origin: "Australia",
+  size: "Medium to Large",
+  temperament: "Friendly, Energetic, Intelligent",
+  life_span: "12-14 years",
+  coat: "Curly or Wavy",
+  colors: "Cream, Chocolate, Black, Apricot",
+  grooming: "Moderate to High",
+  exercise: "High, daily activity",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, allergies",
+  temperature_tolerance: {
+    winter: "Good tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive",
+    autumn: "Comfortable"
+  }
+},
+
+labrador: {
+  origin: "Canada",
+  size: "Medium to Large",
+  temperament: "Friendly, Active, Outgoing",
+  life_span: "10-12 years",
+  coat: "Short, Dense, Water-resistant",
+  colors: "Black, Yellow, Chocolate",
+  grooming: "Low, weekly brushing",
+  exercise: "High, daily walks & play",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, obesity, eye conditions",
+  temperature_tolerance: {
+    winter: "Cold sensitive, provide warm shelter below 5°C",
+    spring: "Comfortable, outdoor activity recommended",
+    summer: "Heat sensitive, avoid >30°C, provide shade & water",
+    autumn: "Comfortable, enjoy outdoor activities"
+  }
+},
+
+leonberg: {
+  origin: "Germany",
+  size: "Giant",
+  temperament: "Gentle, Friendly, Loyal",
+  life_span: "8-10 years",
+  coat: "Thick, Double coat",
+  colors: "Golden, Red, Brown with black mask",
+  grooming: "High, needs regular brushing",
+  exercise: "High, daily activity",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, cancer, heart issues",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable, outdoor activity",
+    summer: "Heat sensitive, avoid midday heat",
+    autumn: "Comfortable, active"
+  }
+},
+
+lhasa: {
+  origin: "Tibet",
+  size: "Small",
+  temperament: "Alert, Independent, Loyal",
+  life_span: "12-15 years",
+  coat: "Long, Dense",
+  colors: "Gold, Cream, White, Black, Mixed",
+  grooming: "High, requires daily grooming",
+  exercise: "Moderate",
+  good_with_children: "Yes, with supervision",
+  trainability: "Moderate, independent",
+  health_issues: "Hip dysplasia, kidney issues",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, avoid high temps",
+    autumn: "Comfortable"
+  }
+},
+
+malamute: {
+  origin: "Alaska, USA",
+  size: "Large",
+  temperament: "Strong, Friendly, Playful",
+  life_span: "10-12 years",
+  coat: "Thick, Double coat",
+  colors: "Gray, Black, Red with white",
+  grooming: "High, heavy shedding",
+  exercise: "Very High, requires daily running",
+  good_with_children: "Yes",
+  trainability: "Moderate, independent",
+  health_issues: "Hip dysplasia, bloat",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, avoid hot weather",
+    autumn: "Comfortable"
+  }
+},
+
+malinois: {
+  origin: "Belgium",
+  size: "Medium to Large",
+  temperament: "Energetic, Intelligent, Protective",
+  life_span: "12-14 years",
+  coat: "Short, Straight",
+  colors: "Fawn, Mahogany with black mask",
+  grooming: "Low, weekly brushing",
+  exercise: "Very High, needs daily training",
+  good_with_children: "Yes, with training",
+  trainability: "Very High",
+  health_issues: "Hip dysplasia, eye issues",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat tolerant, needs hydration",
+    autumn: "Comfortable"
+  }
+},
+
+maltese: {
+  origin: "Malta",
+  size: "Small",
+  temperament: "Gentle, Playful, Lively",
+  life_span: "12-15 years",
+  coat: "Long, Silky",
+  colors: "White",
+  grooming: "High, daily grooming",
+  exercise: "Low to Moderate",
+  good_with_children: "Yes, with care",
+  trainability: "High",
+  health_issues: "Dental issues, luxating patella",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs warmth",
+    spring: "Comfortable",
+    summer: "Heat sensitive, avoid extreme heat",
+    autumn: "Comfortable"
+  }
+},
+
+mastiff: {
+  origin: "England",
+  size: "Giant",
+  temperament: "Gentle, Protective, Courageous",
+  life_span: "8-10 years",
+  coat: "Short, Dense",
+  colors: "Fawn, Apricot, Brindle",
+  grooming: "Low, weekly brushing",
+  exercise: "Moderate",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, heart issues",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, avoid long exposure",
+    autumn: "Comfortable"
+  }
+},
+
+mexicanhairless: {
+  origin: "Mexico",
+  size: "Small, Medium, Large varieties",
+  temperament: "Calm, Alert, Loyal",
+  life_span: "12-14 years",
+  coat: "Hairless or short coat",
+  colors: "Gray, Black, Bronze",
+  grooming: "Low, minimal care",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "Moderate to High",
+  health_issues: "Skin issues, dental problems",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs clothing",
+    spring: "Comfortable",
+    summer: "Heat tolerant, use sunscreen if hairless",
+    autumn: "Comfortable"
+  }
+},
+
+mix: {
+  origin: "Varies",
+  size: "Varies",
+  temperament: "Varies",
+  life_span: "10-15 years",
+  coat: "Varies",
+  colors: "All colors",
+  grooming: "Depends on mix",
+  exercise: "Depends on breed mix",
+  good_with_children: "Usually yes",
+  trainability: "Varies",
+  health_issues: "Generally healthier (hybrid vigor)",
+  temperature_tolerance: {
+    winter: "Depends on coat type",
+    spring: "Comfortable",
+    summer: "Varies, provide water & shade",
+    autumn: "Comfortable"
+  }
+},
+
+mountain: {
+  origin: "Europe/USA (group of breeds)",
+  size: "Large to Giant",
+  temperament: "Protective, Gentle, Loyal",
+  life_span: "8-12 years",
+  coat: "Thick, Double coat",
+  colors: "White, Black, Brown, Mixed",
+  grooming: "Moderate to High",
+  exercise: "Moderate",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, bloat",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, needs shade",
+    autumn: "Comfortable"
+  }
+},
+
+mudhol: {
+  origin: "India",
+  size: "Medium to Large",
+  temperament: "Loyal, Alert, Brave",
+  life_span: "13-15 years",
+  coat: "Short, Fine",
+  colors: "Fawn, Black, White, Brindle",
+  grooming: "Low, minimal grooming",
+  exercise: "High, requires daily runs",
+  good_with_children: "Yes, with supervision",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, skin issues",
+  temperature_tolerance: {
+    winter: "Mild cold tolerance",
+    spring: "Comfortable, enjoys activity",
+    summer: "Heat tolerant, ensure hydration",
+    autumn: "Comfortable"
+  }
+},
+
+newfoundland: {
+  origin: "Canada",
+  size: "Giant",
+  temperament: "Gentle, Loyal, Patient",
+  life_span: "8-10 years",
+  coat: "Thick, Double coat, Water-resistant",
+  colors: "Black, Brown, Gray, Landseer",
+  grooming: "High, requires regular brushing",
+  exercise: "Moderate, enjoys swimming",
+  good_with_children: "Yes, very gentle",
+  trainability: "High",
+  health_issues: "Hip dysplasia, heart issues",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Comfortable",
+    summer: "Heat sensitive, needs cool water",
+    autumn: "Comfortable"
+  }
+},
+corgi: {
+  origin: "Wales",
+  size: "Small to Medium",
+  temperament: "Affectionate, Alert, Smart",
+  life_span: "12-15 years",
+  coat: "Medium length, double coat",
+  colors: "Red, Sable, Fawn, Black & Tan",
+  grooming: "Moderate, regular brushing",
+  exercise: "Moderate, daily walks & play",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, progressive retinal atrophy",
+  temperature_tolerance: {
+    winter: "Good tolerance, thick coat provides warmth",
+    spring: "Comfortable, enjoys outdoor play",
+    summer: "Can overheat, avoid >30°C",
+    autumn: "Very comfortable outdoors"
+  }
+},
+cotondetulear: {
+  origin: "Madagascar",
+  size: "Small",
+  temperament: "Lively, Affectionate, Playful",
+  life_span: "14-16 years",
+  coat: "Long, cotton-like",
+  colors: "White, sometimes with gray or tan markings",
+  grooming: "High, daily brushing",
+  exercise: "Moderate, daily walks & playtime",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, eye disorders",
+  temperature_tolerance: {
+    winter: "Good tolerance with coat",
+    spring: "Enjoys outdoor activity",
+    summer: "Sensitive to heat, keep cool",
+    autumn: "Comfortable for outdoor play"
+  }
+},
+dashund: {
+  origin: "Germany",
+  size: "Small",
+  temperament: "Curious, Clever, Stubborn",
+  life_span: "12-16 years",
+  coat: "Smooth, Longhaired, or Wirehaired",
+  colors: "Black, Tan, Chocolate, Red",
+  grooming: "Low to Moderate, depends on coat type",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes (with supervision)",
+  trainability: "Moderate",
+  health_issues: "Back problems, obesity",
+  temperature_tolerance: {
+    winter: "Sensitive to cold, needs warm clothing",
+    spring: "Comfortable outdoors",
+    summer: "Avoid excessive heat",
+    autumn: "Good for outdoor activity"
+  }
+},
+dalmatian: {
+  origin: "Croatia",
+  size: "Medium to Large",
+  temperament: "Energetic, Friendly, Sensitive",
+  life_span: "11-13 years",
+  coat: "Short, dense",
+  colors: "White with black or liver spots",
+  grooming: "Low, weekly brushing",
+  exercise: "High, needs lots of activity",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Deafness, urinary stones",
+  temperature_tolerance: {
+    winter: "Sensitive to cold, provide warmth",
+    spring: "Good for outdoor activities",
+    summer: "Avoid high heat, provide water",
+    autumn: "Comfortable for outdoor fun"
+  }
+},
+dane: {
+  origin: "Germany",
+  size: "Giant",
+  temperament: "Gentle, Friendly, Devoted",
+  life_span: "7-10 years",
+  coat: "Short, smooth",
+  colors: "Fawn, Brindle, Black, Blue, Harlequin",
+  grooming: "Low, occasional brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Bloat, heart disease, hip dysplasia",
+  temperature_tolerance: {
+    winter: "Sensitive to cold, needs protection",
+    spring: "Comfortable",
+    summer: "Avoid extreme heat",
+    autumn: "Good for outdoor activity"
+  }
+},
+danish: {
+  origin: "Denmark",
+  size: "Medium to Large",
+  temperament: "Loyal, Energetic, Friendly",
+  life_span: "10-12 years",
+  coat: "Short, dense",
+  colors: "Brown, Fawn, Brindle",
+  grooming: "Low, weekly brushing",
+  exercise: "High, active lifestyle",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye issues",
+  temperature_tolerance: {
+    winter: "Needs shelter in extreme cold",
+    spring: "Active outdoors",
+    summer: "Avoid prolonged sun exposure",
+    autumn: "Best season for activities"
+  }
+},
+deerhound: {
+  origin: "Scotland",
+  size: "Large",
+  temperament: "Gentle, Dignified, Friendly",
+  life_span: "8-11 years",
+  coat: "Rough, shaggy",
+  colors: "Gray, Brindle",
+  grooming: "Moderate, brushing weekly",
+  exercise: "High, needs running space",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Heart issues, bloat",
+  temperature_tolerance: {
+    winter: "Good tolerance with coat",
+    spring: "Very active outdoors",
+    summer: "Avoid excessive heat",
+    autumn: "Comfortable season"
+  }
+},
+dhole: {
+  origin: "Asia (India, Southeast Asia)",
+  size: "Medium",
+  temperament: "Intelligent, Social, Active",
+  life_span: "10-13 years",
+  coat: "Short, dense",
+  colors: "Reddish-brown",
+  grooming: "Low, occasional brushing",
+  exercise: "High, pack animal",
+  good_with_children: "Wild species, not domestic",
+  trainability: "Not applicable",
+  health_issues: "Wild animal, not domesticated",
+  temperature_tolerance: {
+    winter: "Adapted to forests, tolerates mild cold",
+    spring: "Active hunting season",
+    summer: "Heat tolerant",
+    autumn: "Adapted to varied climates"
+  }
+},
+dingo: {
+  origin: "Australia",
+  size: "Medium",
+  temperament: "Independent, Intelligent, Wary",
+  life_span: "10-12 years (wild)",
+  coat: "Short, weather-resistant",
+  colors: "Tan, Ginger, Sandy",
+  grooming: "Low",
+  exercise: "High, wild roaming",
+  good_with_children: "Not suitable as domestic pet",
+  trainability: "Low",
+  health_issues: "Not domesticated",
+  temperature_tolerance: {
+    winter: "Adapted to mild cold",
+    spring: "Comfortable",
+    summer: "Heat tolerant",
+    autumn: "Active season"
+  }
+},
+doberman: {
+  origin: "Germany",
+  size: "Large",
+  temperament: "Alert, Loyal, Intelligent",
+  life_span: "10-13 years",
+  coat: "Short, sleek",
+  colors: "Black, Red, Blue, Fawn",
+  grooming: "Low, occasional brushing",
+  exercise: "High, daily exercise",
+  good_with_children: "Yes (with supervision)",
+  trainability: "High",
+  health_issues: "Cardiomyopathy, hip dysplasia",
+  temperature_tolerance: {
+    winter: "Sensitive to cold, needs protection",
+    spring: "Good for training and play",
+    summer: "Avoid extreme heat",
+    autumn: "Very comfortable outdoors"
+  }
+},
+elkhound: {
+  origin: "Norway",
+  size: "Medium",
+  temperament: "Bold, Loyal, Friendly",
+  life_span: "12-15 years",
+  coat: "Thick, double coat",
+  colors: "Gray with black tips",
+  grooming: "Moderate, regular brushing",
+  exercise: "High, active lifestyle",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, eye problems",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Active outdoors",
+    summer: "Sensitive to high heat",
+    autumn: "Perfect season for activity"
+  }
+},
+entlebucher: {
+  origin: "Switzerland",
+  size: "Medium",
+  temperament: "Loyal, Agile, Intelligent",
+  life_span: "11-13 years",
+  coat: "Short, dense",
+  colors: "Tricolor (black, white, tan)",
+  grooming: "Low, weekly brushing",
+  exercise: "High, needs active play",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, cataracts",
+  temperature_tolerance: {
+    winter: "Good tolerance, thick coat",
+    spring: "Loves outdoor activity",
+    summer: "Needs shade and water",
+    autumn: "Ideal for hiking and play"
+  }
+},eskimo: {
+  origin: "United States",
+  size: "Small to Medium",
+  temperament: "Friendly, Playful, Smart",
+  life_span: "12-15 years",
+  coat: "Thick, fluffy double coat",
+  colors: "White, biscuit",
+  grooming: "High, frequent brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, PRA",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Active and playful",
+    summer: "Heat sensitive, keep cool",
+    autumn: "Very comfortable outdoors"
+  }
+},
+finnish: {
+  origin: "Finland",
+  size: "Medium",
+  temperament: "Friendly, Brave, Alert",
+  life_span: "12-14 years",
+  coat: "Thick, dense double coat",
+  colors: "Red, Gold",
+  grooming: "Moderate, weekly brushing",
+  exercise: "High, needs outdoor play",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, PRA",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Very active",
+    summer: "Avoid excessive heat",
+    autumn: "Best season for activity"
+  }
+},
+frise: {
+  origin: "France/Belgium",
+  size: "Small",
+  temperament: "Cheerful, Playful, Gentle",
+  life_span: "14-15 years",
+  coat: "Curly, fluffy",
+  colors: "White",
+  grooming: "High, daily brushing",
+  exercise: "Moderate, daily play",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Allergies, dental issues",
+  temperature_tolerance: {
+    winter: "Sensitive to extreme cold",
+    spring: "Comfortable",
+    summer: "Heat sensitive",
+    autumn: "Active outdoors"
+  }
+},
+gaddi: {
+  origin: "India (Himalayas)",
+  size: "Large",
+  temperament: "Protective, Strong, Loyal",
+  life_span: "10-12 years",
+  coat: "Thick, long double coat",
+  colors: "Black, Brown, Tan",
+  grooming: "High, frequent grooming",
+  exercise: "High, needs space",
+  good_with_children: "Yes (protective)",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia",
+  temperature_tolerance: {
+    winter: "Excellent in cold climates",
+    spring: "Active outdoors",
+    summer: "Heat sensitive, needs shade",
+    autumn: "Comfortable season"
+  }
+},
+germanshepherd: {
+  origin: "Germany",
+  size: "Large",
+  temperament: "Intelligent, Loyal, Courageous",
+  life_span: "9-13 years",
+  coat: "Medium length, double coat",
+  colors: "Black & Tan, Black, Sable",
+  grooming: "Moderate, regular brushing",
+  exercise: "High, daily exercise",
+  good_with_children: "Yes",
+  trainability: "Very High",
+  health_issues: "Hip dysplasia, elbow dysplasia",
+  temperature_tolerance: {
+    winter: "Good tolerance",
+    spring: "Very active",
+    summer: "Heat sensitive, provide shade",
+    autumn: "Excellent for training and work"
+  }
+},
+greyhound: {
+  origin: "Middle East/Egypt",
+  size: "Large",
+  temperament: "Gentle, Intelligent, Athletic",
+  life_span: "10-14 years",
+  coat: "Short, smooth",
+  colors: "Variety (Black, White, Fawn, Brindle)",
+  grooming: "Low, occasional brushing",
+  exercise: "Moderate, sprinting",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Bloat, hip issues",
+  temperature_tolerance: {
+    winter: "Sensitive to cold, needs coat",
+    spring: "Comfortable",
+    summer: "Heat tolerant to moderate extent",
+    autumn: "Great running season"
+  }
+},
+groenendael: {
+  origin: "Belgium",
+  size: "Large",
+  temperament: "Loyal, Intelligent, Alert",
+  life_span: "12-14 years",
+  coat: "Long, black double coat",
+  colors: "Black",
+  grooming: "High, frequent brushing",
+  exercise: "High, daily exercise",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye disorders",
+  temperature_tolerance: {
+    winter: "Excellent tolerance",
+    spring: "Active and playful",
+    summer: "Sensitive to heat",
+    autumn: "Perfect for training and outdoor"
+  }
+},
+havanese: {
+  origin: "Cuba",
+  size: "Small",
+  temperament: "Gentle, Friendly, Playful",
+  life_span: "14-16 years",
+  coat: "Long, silky",
+  colors: "White, Cream, Black, Brown, Silver",
+  grooming: "High, daily brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Eye problems, heart disease",
+  temperature_tolerance: {
+    winter: "Sensitive to cold",
+    spring: "Comfortable",
+    summer: "Heat sensitive, keep cool",
+    autumn: "Good for outdoor play"
+  }
+},
+basenji: {
+  origin: "Central Africa",
+  size: "Small to Medium",
+  temperament: "Independent, Smart, Alert",
+  life_span: "12-14 years",
+  coat: "Short, fine",
+  colors: "Red, Black, Tricolor, Brindle",
+  grooming: "Low, occasional brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes (better with older kids)",
+  trainability: "Moderate",
+  health_issues: "Fanconi syndrome, hip dysplasia",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs warm clothing",
+    spring: "Active outdoors",
+    summer: "Heat tolerant",
+    autumn: "Comfortable outdoors"
+  }
+},
+beagle: {
+  origin: "England",
+  size: "Small to Medium",
+  temperament: "Curious, Friendly, Merry",
+  life_span: "12-15 years",
+  coat: "Short, dense",
+  colors: "Tricolor, Lemon, Red & White",
+  grooming: "Low, weekly brushing",
+  exercise: "High, loves running",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Epilepsy, hip dysplasia, obesity",
+  temperature_tolerance: {
+    winter: "Sensitive to extreme cold",
+    spring: "Enjoys outdoor play",
+    summer: "Heat sensitive, avoid >30°C",
+    autumn: "Perfect season for activities"
+  }
+},
+bluetick: {
+  origin: "United States",
+  size: "Medium to Large",
+  temperament: "Friendly, Active, Intelligent",
+  life_span: "11-12 years",
+  coat: "Short, glossy",
+  colors: "Blue mottled with black",
+  grooming: "Low, occasional brushing",
+  exercise: "High, needs outdoor activity",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, bloat",
+  temperature_tolerance: {
+    winter: "Moderate cold tolerance",
+    spring: "Very active season",
+    summer: "Avoid extreme heat",
+    autumn: "Great for hunting and play"
+  }
+},
+borzoi: {
+  origin: "Russia",
+  size: "Large",
+  temperament: "Gentle, Quiet, Independent",
+  life_span: "9-14 years",
+  coat: "Long, silky",
+  colors: "Various (White, Black, Tan, Brindle)",
+  grooming: "High, frequent brushing",
+  exercise: "Moderate, sprinting sessions",
+  good_with_children: "Yes (calm supervision)",
+  trainability: "Moderate",
+  health_issues: "Bloat, heart problems",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Enjoys outdoor activity",
+    summer: "Avoid heat >28°C",
+    autumn: "Very comfortable outdoors"
+  }
+},
+bouvier: {
+  origin: "Belgium",
+  size: "Large",
+  temperament: "Gentle, Protective, Loyal",
+  life_span: "10-12 years",
+  coat: "Rough, double coat",
+  colors: "Fawn, Black, Brindle",
+  grooming: "High, frequent grooming",
+  exercise: "High, daily outdoor work",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, cataracts",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Active season",
+    summer: "Sensitive to high heat",
+    autumn: "Perfect for training"
+  }
+},
+boxer: {
+  origin: "Germany",
+  size: "Medium to Large",
+  temperament: "Playful, Loyal, Energetic",
+  life_span: "10-12 years",
+  coat: "Short, smooth",
+  colors: "Fawn, Brindle, White",
+  grooming: "Low, weekly brushing",
+  exercise: "High, needs daily activity",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Cancer, heart issues, hip dysplasia",
+  temperature_tolerance: {
+    winter: "Cold sensitive, keep warm",
+    spring: "Loves outdoor play",
+    summer: "Avoid high heat",
+    autumn: "Comfortable outdoors"
+  }
+},
+brabancon: {
+  origin: "Belgium",
+  size: "Small",
+  temperament: "Alert, Loyal, Curious",
+  life_span: "12-15 years",
+  coat: "Smooth or rough",
+  colors: "Red, Black, Black & Tan",
+  grooming: "Low to Moderate",
+  exercise: "Moderate, playful walks",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Respiratory issues, eye problems",
+  temperature_tolerance: {
+    winter: "Cold sensitive",
+    spring: "Active outdoors",
+    summer: "Avoid hot weather",
+    autumn: "Comfortable outdoors"
+  }
+},
+briard: {
+  origin: "France",
+  size: "Large",
+  temperament: "Faithful, Brave, Protective",
+  life_span: "10-12 years",
+  coat: "Long, wavy",
+  colors: "Black, Tawny, Gray",
+  grooming: "High, daily brushing",
+  exercise: "High, working breed",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye problems",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Loves outdoor work",
+    summer: "Sensitive to extreme heat",
+    autumn: "Perfect for herding tasks"
+  }
+},
+buhund: {
+  origin: "Norway",
+  size: "Medium",
+  temperament: "Cheerful, Energetic, Loyal",
+  life_span: "12-15 years",
+  coat: "Thick, medium double coat",
+  colors: "Wheaten, Black",
+  grooming: "Moderate, regular brushing",
+  exercise: "High, daily exercise",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye conditions",
+  temperature_tolerance: {
+    winter: "Very good cold tolerance",
+    spring: "Active and playful",
+    summer: "Avoid prolonged heat",
+    autumn: "Very comfortable season"
+  }
+},
+bulldog: {
+  origin: "England",
+  size: "Medium",
+  temperament: "Docile, Willful, Friendly",
+  life_span: "8-10 years",
+  coat: "Short, smooth",
+  colors: "Brindle, White, Red, Fawn",
+  grooming: "Low",
+  exercise: "Low, short walks",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Respiratory issues, hip problems",
+  temperature_tolerance: {
+    winter: "Cold sensitive, needs warmth",
+    spring: "Comfortable outdoors",
+    summer: "Heat sensitive, avoid >28°C",
+    autumn: "Moderate outdoor comfort"
+  }
+},
+bullterrier: {
+  origin: "England",
+  size: "Medium",
+  temperament: "Courageous, Lively, Fun-loving",
+  life_span: "11-14 years",
+  coat: "Short, flat",
+  colors: "White, Brindle, Black, Red",
+  grooming: "Low, occasional brushing",
+  exercise: "High, daily walks",
+  good_with_children: "Yes (with supervision)",
+  trainability: "Moderate",
+  health_issues: "Deafness, skin problems, kidney issues",
+  temperature_tolerance: {
+    winter: "Sensitive to extreme cold",
+    spring: "Playful outdoors",
+    summer: "Sensitive to heat",
+    autumn: "Comfortable season"
+  }
+},
+cattledog: {
+  origin: "Australia",
+  size: "Medium",
+  temperament: "Alert, Intelligent, Energetic",
+  life_span: "12-16 years",
+  coat: "Short, weather-resistant",
+  colors: "Blue, Red speckled",
+  grooming: "Low, occasional brushing",
+  exercise: "High, working breed",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Progressive retinal atrophy, deafness",
+  temperature_tolerance: {
+    winter: "Good cold tolerance",
+    spring: "Very active outdoors",
+    summer: "Heat tolerant but avoid peak heat",
+    autumn: "Excellent outdoor work season"
+  }
+},
+cavapoo: {
+  origin: "Australia (designer breed)",
+  size: "Small to Medium",
+  temperament: "Affectionate, Gentle, Friendly",
+  life_span: "12-15 years",
+  coat: "Soft, curly/wavy",
+  colors: "Varied (Cream, Gold, Black, Tricolor)",
+  grooming: "Moderate, regular grooming",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, eye problems",
+  temperature_tolerance: {
+    winter: "Needs warmth in cold climates",
+    spring: "Playful outdoors",
+    summer: "Avoid overheating",
+    autumn: "Comfortable outdoor season"
+  }
+},
+chihuahua: {
+  origin: "Mexico",
+  size: "Small",
+  temperament: "Alert, Lively, Devoted",
+  life_span: "14-16 years",
+  coat: "Smooth or long",
+  colors: "Variety (Fawn, Black, White, Chocolate)",
+  grooming: "Low, depends on coat",
+  exercise: "Low, short walks",
+  good_with_children: "Yes (better with older children)",
+  trainability: "Moderate",
+  health_issues: "Dental issues, heart disease",
+  temperature_tolerance: {
+    winter: "Very cold sensitive, needs clothing",
+    spring: "Comfortable outdoors",
+    summer: "Heat tolerant",
+    autumn: "Comfortable season"
+  }
+},
+chippiparai: {
+  origin: "India (Tamil Nadu)",
+  size: "Medium to Large",
+  temperament: "Loyal, Independent, Active",
+  life_span: "12-15 years",
+  coat: "Short, smooth",
+  colors: "Fawn, Brindle, Grey",
+  grooming: "Low, occasional brushing",
+  exercise: "High, requires running",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia",
+  temperature_tolerance: {
+    winter: "Sensitive to extreme cold",
+    spring: "Good for outdoor activity",
+    summer: "Very heat tolerant",
+    autumn: "Comfortable outdoors"
+  }
+},
+chow: {
+  origin: "China",
+  size: "Medium to Large",
+  temperament: "Independent, Loyal, Proud",
+  life_span: "9-15 years",
+  coat: "Thick, dense double coat",
+  colors: "Red, Black, Cream, Blue",
+  grooming: "High, frequent brushing",
+  exercise: "Moderate, daily walks",
+  good_with_children: "Yes (with training)",
+  trainability: "Low to Moderate",
+  health_issues: "Hip dysplasia, eye problems",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance",
+    spring: "Enjoys moderate activity",
+    summer: "Heat sensitive, avoid high temperatures",
+    autumn: "Good for walks outdoors"
+  }
+},
+clumber: {
+  origin: "England",
+  size: "Large",
+  temperament: "Gentle, Loyal, Calm",
+  life_span: "10-12 years",
+  coat: "Dense, straight",
+  colors: "White with lemon/orange markings",
+  grooming: "Moderate, regular brushing",
+  exercise: "Low to Moderate",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, eye problems",
+  temperature_tolerance: {
+    winter: "Good tolerance",
+    spring: "Comfortable outdoors",
+    summer: "Heat sensitive",
+    autumn: "Active season"
+  }
+},
+cockapoo: {
+  origin: "United States (designer breed)",
+  size: "Small to Medium",
+  temperament: "Affectionate, Friendly, Energetic",
+  life_span: "12-15 years",
+  coat: "Curly or wavy",
+  colors: "Varied (Black, White, Apricot, Chocolate)",
+  grooming: "Moderate to High",
+  exercise: "Moderate, playful walks",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Hip dysplasia, PRA",
+  temperature_tolerance: {
+    winter: "Needs warm shelter",
+    spring: "Playful outdoors",
+    summer: "Sensitive to heat",
+    autumn: "Comfortable season"
+  }
+},
+collie: {
+  origin: "Scotland",
+  size: "Medium to Large",
+  temperament: "Graceful, Loyal, Intelligent",
+  life_span: "12-14 years",
+  coat: "Rough or smooth double coat",
+  colors: "Sable & White, Tricolor, Blue Merle",
+  grooming: "High, regular brushing",
+  exercise: "High, loves outdoor activities",
+  good_with_children: "Yes",
+  trainability: "High",
+  health_issues: "Eye disorders, hip dysplasia",
+  temperature_tolerance: {
+    winter: "Good tolerance with coat",
+    spring: "Active outdoors",
+    summer: "Avoid high heat",
+    autumn: "Perfect season for activity"
+  }
+},
+coonhound: {
+  origin: "United States",
+  size: "Medium to Large",
+  temperament: "Energetic, Intelligent, Loyal",
+  life_span: "10-12 years",
+  coat: "Short, dense",
+  colors: "Black & Tan, Redtick, Bluetick",
+  grooming: "Low, occasional brushing",
+  exercise: "High, loves hunting and play",
+  good_with_children: "Yes",
+  trainability: "Moderate",
+  health_issues: "Hip dysplasia, ear infections",
+  temperature_tolerance: {
+    winter: "Moderate cold tolerance",
+    spring: "Very active season",
+    summer: "Heat sensitive, avoid >30°C",
+    autumn: "Perfect for outdoor activity"
+  }
+},
+Bakharwal: {
+  origin: "India (Jammu & Kashmir, Himalayan Region)",
+  size: "Large",
+  temperament: "Protective, Loyal, Fearless, Alert",
+  life_span: "9-11 years",
+  coat: "Thick, long double coat",
+  colors: "Black, Tan, White, Fawn",
+  grooming: "High, requires regular brushing due to heavy coat",
+  exercise: "Moderate to High, needs open space and daily walks",
+  good_with_children: "Protective, good with children under supervision",
+  trainability: "Moderate, strong-willed and independent",
+  health_issues: "Hip dysplasia, arthritis, joint problems in old age",
+  temperature_tolerance: {
+    winter: "Excellent cold tolerance, thrives in snow and sub-zero conditions",
+    spring: "Comfortable and active season",
+    summer: "Struggles in hot climate, needs cool shelter and hydration",
+    autumn: "Very comfortable, energetic outdoors"
+  }
+}
+ };
+
+    let allBreeds = {};
+    let currentBreed = "";
+    let currentSubBreed = "";
+
+    const breedSelect = document.getElementById('breedSelect');
+    const subBreedSelect = document.getElementById('subBreedSelect');
+    const subBreedContainer = document.getElementById('subBreedContainer');
+    const resultDiv = document.getElementById('result');
+    const detailsDiv = document.getElementById('details');
+    const detailsBtn = document.getElementById('detailsBtn');
+    const anotherBtn = document.getElementById('anotherBtn');
+    const searchBtn = document.getElementById('searchBtn');
+
+    async function loadBreeds() {
+      const res = await fetch('https://dog.ceo/api/breeds/list/all');
+      const data = await res.json();
+      allBreeds = data.message;
+      const breeds = Object.keys(allBreeds);
+      breeds.forEach(breed => {
+        let option = document.createElement('option');
+        option.value = breed;
+        option.textContent = breed.charAt(0).toUpperCase() + breed.slice(1);
+        breedSelect.appendChild(option);
+      });
+    }
+
+    function loadSubBreeds() {
+      const breed = breedSelect.value;
+      const subBreeds = allBreeds[breed];
+      subBreedSelect.innerHTML = "";
+
+      if (subBreeds && subBreeds.length > 0) {
+        subBreedContainer.style.display = "block";
+        subBreeds.forEach(sb => {
+          let option = document.createElement('option');
+          option.value = sb;
+          option.textContent = sb.charAt(0).toUpperCase() + sb.slice(1);
+          subBreedSelect.appendChild(option);
+        });
+      } else {
+        subBreedContainer.style.display = "none";
+      }
+    }
+
+    async function fetchDogImage(breed, sub) {
+      const url = sub
+        ? `https://dog.ceo/api/breed/${breed}/${sub}/images/random`
+        : `https://dog.ceo/api/breed/${breed}/images/random`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed API");
+      const data = await res.json();
+      return data.message;
+    }
+
+    searchBtn.addEventListener('click', async () => {
+      const breed = breedSelect.value;
+      const sub = subBreedSelect.value || "";
+      if (!breed) {
+        alert("Please select a breed first.");
+        return;
+      }
+      resultDiv.innerHTML = '<div class="spinner"></div>';
+      detailsBtn.style.display = 'none';
+      anotherBtn.style.display = 'none';
+      detailsDiv.style.display = 'none';
+      detailsDiv.innerHTML = "";
+
+      try {
+        const imageUrl = await fetchDogImage(breed, sub);
+        resultDiv.innerHTML = `
+          <h2>${breed.charAt(0).toUpperCase() + breed.slice(1)} ${sub ? "- " + sub : ""}</h2>
+          <img id="dogImage" src="${imageUrl}" alt="dog image" />
+        `;
+        detailsBtn.style.display = "inline-block";
+        anotherBtn.style.display = "inline-block";
+        currentBreed = breed;
+        currentSubBreed = sub;
+      } catch (err) {
+        resultDiv.innerHTML = '<p style="color:red;">Failed to load image. Try again.</p>';
+      }
+    });
+
+    anotherBtn.addEventListener('click', async () => {
+      if (!currentBreed) return;
+      const imgEl = document.getElementById('dogImage');
+      if (!imgEl) return;
+      imgEl.src = "";
+      imgEl.alt = "Loading...";
+      try {
+        const newImg = await fetchDogImage(currentBreed, currentSubBreed);
+        imgEl.src = newImg;
+      } catch (err) {
+        alert("Failed to load another image. Try again.");
+      }
+    });
+
+    detailsBtn.addEventListener('click', () => {
+      const info = breedInfo[currentBreed.toLowerCase()];
+      if (info) {
+        detailsDiv.innerHTML = `
+          <strong>Origin:</strong> ${info.origin}<br>
+          <strong>Size:</strong> ${info.size}<br>
+          <strong>Temperament:</strong> ${info.temperament}<br>
+          <strong>Life Span:</strong> ${info.life_span}<br>
+          <strong>Coat:</strong> ${info.coat}<br>
+          <strong>Colors:</strong> ${info.colors}<br>
+          <strong>Grooming:</strong> ${info.grooming}<br>
+          <strong>Exercise:</strong> ${info.exercise}<br>
+          <strong>Good with Children:</strong> ${info.good_with_children}<br>
+          <strong>Trainability:</strong> ${info.trainability}<br>
+          <strong>Health Issues:</strong> ${info.health_issues}<br>
+          <strong>Temperature Tolerance:</strong><br>
+          &nbsp;&nbsp;Winter: ${info.temperature_tolerance.winter}<br>
+          &nbsp;&nbsp;Spring: ${info.temperature_tolerance.spring}<br>
+          &nbsp;&nbsp;Summer: ${info.temperature_tolerance.summer}<br>
+          &nbsp;&nbsp;Autumn: ${info.temperature_tolerance.autumn}
+        `;
+      } else {
+        detailsDiv.innerHTML = "<em>Information not available for this breed.</em>";
+      }
+      detailsDiv.style.display = "block";
+    });
+
+    window.onload = loadBreeds;
+  </script>
+</body>
+
+</html>

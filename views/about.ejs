@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cat Breed Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(#1c1c28);
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    select,
+    button {
+      padding: 12px 18px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #ff7e5f;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ff9966;
+    }
+
+    .card {
+      background: #fff;
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+      position: relative;
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #ff7e5f;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🐾 Cat Breed Explorer</h1>
+
+  <div class="controls">
+    <select id="breedSelect">
+      <option value="">-- Select Breed --</option>
+    </select>
+    <button id="showImageBtn">Show Image</button>
+    <button id="loadImageBtn">Load Another Image</button>
+    <button id="detailBtn">Show Detail</button>
+  </div>
+
+  <div class="card" id="resultCard">
+    <div id="loader" class="loader"></div>
+    <img id="catImage" src="" alt="Cat">
+    <h2 id="catName"></h2>
+    <p id="catOrigin"></p>
+    <p id="catLife"></p>
+    <p id="catTemperament"></p>
+    <p id="catDesc"></p>
+  </div>
+
+  <script>
+    const breedSelect = document.getElementById("breedSelect");
+    const showImageBtn = document.getElementById("showImageBtn");
+    const loadImageBtn = document.getElementById("loadImageBtn");
+    const detailBtn = document.getElementById("detailBtn");
+
+    const resultCard = document.getElementById("resultCard");
+    const catImage = document.getElementById("catImage");
+    const loader = document.getElementById("loader");
+    const catName = document.getElementById("catName");
+    const catOrigin = document.getElementById("catOrigin");
+    const catLife = document.getElementById("catLife");
+    const catTemperament = document.getElementById("catTemperament");
+    const catDesc = document.getElementById("catDesc");
+
+    let currentBreedId = "";
+
+    // Load breeds into dropdown
+    async function loadBreeds() {
+      const res = await fetch("https://api.thecatapi.com/v1/breeds");
+      const breeds = await res.json();
+      breeds.forEach(breed => {
+        const opt = document.createElement("option");
+        opt.value = breed.id;
+        opt.textContent = breed.name;
+        breedSelect.appendChild(opt);
+      });
+    }
+
+    breedSelect.addEventListener("change", () => {
+      currentBreedId = breedSelect.value;
+    });
+
+    async function loadImage() {
+      if (!currentBreedId) return alert("Select a breed first!");
+      loader.style.display = "block"; catImage.style.display = "none"; resultCard.style.display = "block";
+
+      try {
+        const imgRes = await fetch(`https://api.thecatapi.com/v1/images/search?breed_ids=${currentBreedId}`);
+        const imgData = await imgRes.json();
+        catImage.src = imgData[0].url;
+
+        catImage.onload = () => {
+          loader.style.display = "none";
+          catImage.style.display = "block";
+        };
+      } catch (err) {
+        loader.style.display = "none";
+        alert("Error loading image");
+      }
+    }
+
+    async function loadDetail() {
+      if (!currentBreedId) return alert("Select a breed first!");
+      const res = await fetch("https://api.thecatapi.com/v1/breeds");
+      const breeds = await res.json();
+      const data = breeds.find(b => b.id === currentBreedId);
+      if (!data) return;
+
+      catName.textContent = data.name;
+      catOrigin.textContent = "Origin: " + data.origin;
+      catLife.textContent = "Life span: " + data.life_span + " years";
+      catTemperament.textContent = "Temperament: " + data.temperament;
+      catDesc.textContent = data.description;
+
+      resultCard.style.display = "block";
+    }
+
+    showImageBtn.addEventListener("click", loadImage);
+    loadImageBtn.addEventListener("click", loadImage);
+    detailBtn.addEventListener("click", loadDetail);
+
+    loadBreeds(); // Init dropdown
+  </script>
+</body>
+
+</html>

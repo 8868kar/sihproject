@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Animal Doctor — Book Appointment</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS (map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+
+  <style>
+    /* ===== Embedded CSS ===== */
+    :root {
+      --bg: #f4f8fb;
+      --card: rgba(255, 255, 255, 0.85);
+      --glass: rgba(255, 255, 255, 0.6);
+      --accent: linear-gradient(135deg, #5ee7df, #b490ca);
+      --primary: #2b7cff;
+      --muted: #6b7280;
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --shadow: 0 8px 30px rgba(16, 24, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: #0f172a;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: linear-gradient(90deg, #0f172a 0%, #06203b 100%);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(2, 6, 23, 0.3);
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #fff;
+      padding: 4px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 22px;
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 18px;
+      width: 100%;
+    }
+
+    .left-col,
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(6px);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--glass-border);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    .hero p.muted {
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .quick-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #06b6d4, #7c3aed);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    .btn.outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .form-card {
+      padding: 20px;
+    }
+
+    .steps-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .step-indicator {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .progress-track {
+      height: 6px;
+      background: rgba(11, 46, 84, 0.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      background: linear-gradient(90deg, #7c3aed, #06b6d4);
+      width: 0%;
+    }
+
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+      animation: fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .field {
+      display: block;
+      margin: 12px 0;
+      position: relative;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      outline: none;
+      background: transparent;
+      font-size: 0.98rem;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .field span {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      transform-origin: left top;
+      transition: all .18s;
+      pointer-events: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .field input:focus+span,
+    .field input:not(:placeholder-shown)+span,
+    .field textarea:focus+span,
+    .field textarea:not(:placeholder-shown)+span,
+    .field select:focus+span,
+    .field select:not([value=""])+span {
+      transform: translateY(-18px) scale(.85);
+      color: var(--primary);
+      background: transparent;
+      padding: 2px 6px;
+    }
+
+    .select span {
+      top: 8px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+ 
+    .preview-card {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
+      border: 1px solid rgba(15, 23, 42, 0.03);
+    }
+
+    .preview-card strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 320px;
+      overflow: auto;
+    }
+
+    .history-list li {
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 18px;
+      color: var(--muted);
+      opacity: .95;
+    }
+
+    @media (max-width:1000px) {
+      .layout {
+        grid-template-columns: 1fr;
+        padding: 0 12px;
+      }
+
+      .right-col {
+        order: 2;
+      }
+    }
+
+    body.dark {
+      background: #071126;
+      color: #e6eef8;
+    }
+
+    body.dark .card {
+      background: rgba(7, 17, 38, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    body.dark .muted {
+      color: #9fb1c8;
+    }
+
+    body.dark .field input,
+    body.dark .field select,
+    body.dark .field textarea {
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e6eef8;
+      background: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===== HTML Content ===== -->
+  <header class="nav">
+    <div class="brand">
+      <img
+        src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24'><path fill='%23ffffff' d='M12 2a3 3 0 0 0-3 3v.4A5.5 5.5 0 0 0 5.5 11c0 3.03 2.47 5.5 5.5 5.5h.5v4l3-1.5V16.5h.5c3.03 0 5.5-2.47 5.5-5.5A5.5 5.5 0 0 0 15 5.4V5a3 3 0 0 0-3-3z'/></svg>"
+        alt="logo">
+      <span>Animal Doctor</span>
+    </div>
+    <nav class="nav-actions">
+      <button id="modeToggle" class="chip">🌙 Dark</button>
+      <button id="openHistory" class="chip">🕘 History</button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="left-col">
+      <div class="card hero">
+        <h1>🐾 Book your pet's appointment</h1>
+        <p class="muted">Fast, secure and easy booking — get a PDF receipt instantly.</p>
+        <div class="quick-actions">
+          <a href="tel:+911234567890" class="btn outline">📞 Emergency Call</a>
+          <a href="https://wa.me/911234567890" target="_blank" class="btn">💬 WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="card form-card">
+        <div class="steps-header">
+          <div class="step-indicator" id="stepIndicator">Step 1 of 4</div>
+          <div class="progress-track">
+            <div id="progressBar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <form id="appointmentForm" novalidate>
+          <!-- Step 1 -->
+          <div class="form-step active" data-step="0">
+            <h3>Client Details</h3>
+            <label class="field"><input id="clientName" placeholder=" " required><span>Name</span></label>
+            <label class="field"><input id="clientEmail" type="email" placeholder=" "
+                required><span>Email</span></label>
+            <label class="field"><input id="clientPhone" placeholder=" " required><span>Phone</span></label>
+            <div class="actions"><button type="button" class="btn" data-next>Next ➜</button></div>
+          </div>
+          <!-- Step 2 -->
+          <div class="form-step" data-step="1">
+            <h3>Pet Details</h3>
+            <label class="field"><input id="dogName" placeholder=" " required><span>Pet Name</span></label>
+            <label class="field"><input id="dogBreed" placeholder=" "><span>Breed</span></label>
+            <label class="field"><input id="dogAge" type="number" min="0" placeholder=" "><span>Age (yrs)</span></label>
+            <div class="actions">
+              <button type="button" class="btn ghost" data-prev>◂ Back</button>
+              <button type="button" class="btn" data-next>Next ➜</button>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="form-step" data-step="2">
+            <h3>Appointment Details</h3>
+            <label class="field"><input id="hospitalSearch" placeholder="Search hospitals by name or city"><span>Search
+                Hospitals</span></label>
+            <label class="field select">
+              <select id="hospital" required>
+                <option value="">Choose hospital</option>
+              </select><span>Hospital</span>
+            </label>
+            <label class="field select">
+              <select id="doctor" required>
+                <option value="">Choose doctor</option>
+              </select><span>doctor</span>
+            </label>
+            <div class="two-col">
+              <label class="field"><input id="date" type="date" required><span>Date</span></label>
+              <label class="field select"><select id="timeSlot" required>
+                  <option value="">Choose time</option>
+                </select><span>Time Slot</span></label>
+            </div>
+            <div class="actions">
+              <button type="button" class="btn ghost" data-prev>◂ Back</button>
+              <button type="button" class="btn" data-next>Next ➜</button>
+            </div>
+          </div>
+          <!-- Step 4 -->
+          <div class="form-step" data-step="3">
+            <h3>Query & Confirm</h3>
+            <label class="field select">
+              <select id="queryType" required>
+                <option value="">Select Query Type</option>
+                <option>General Check-up</option>
+                <option>Vaccination</option>
+                <option>Surgery</option>
+                <option>Emergency</option>
+                <option>Grooming</option>
+                <option>Other</option>
+              </select>
+              <span>Query Type</span>
+            </label>
+            <label class="field"><textarea id="query" rows="4" placeholder=" "></textarea><span>Describe
+                concern</span></label>
+            <div class="preview-card" id="previewCard">
+              <strong>Preview</strong>
+              <div id="previewContent" class="muted">Fill steps to see preview</div>
+            </div>
+            <div class="actions">
+              <button type="button" class="btn ghost" data-prev>◂ Back</button>
+              <button type="submit" class="btn primary">Confirm & Book ✅</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <aside class="right-col">
+      <div class="card map-card">
+        <div class="map-header">
+          <h3>Find nearest hospitals</h3>
+          <p class="muted">Map centers on your location if allowed</p>
+        </div>
+        <div id="map" style="height:360px;border-radius:10px;overflow:hidden;"></div>
+      </div>
+
+      <div class="card appointments" id="historyPanel" style="display:none">
+        <h3>Appointment History</h3>
+        <ul id="historyList" class="history-list"></ul>
+        <button id="clearHistory" class="btn ghost">Clear History</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <div>© 2025 Danimal Doctor • Built with ❤️</div>
+  </footer>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <script>
+    /* ===== Embedded JS ===== */
+    const form = document.getElementById('appointmentForm');
+    const steps = form.querySelectorAll('.form-step');
+    const progressBar = document.getElementById('progressBar');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const previewContent = document.getElementById('previewContent');
+    const historyPanel = document.getElementById('historyPanel');
+    const historyList = document.getElementById('historyList');
+    const clearHistory = document.getElementById('clearHistory');
+    let currentStep = 0;
+
+    form.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); return false; } });
+
+    const hospitals = [
+      { name: 'Happy Paws Vet', city: 'Delhi',doctor: ['Dr. Sharma', 'Dr. Verma'] },
+      { name: 'Pet Care Clinic', city: 'Mumbai',doctor: ['Dr. Gupta', 'Dr. Singh'] },
+      { name: 'Animal Health Center', city: 'Noida',doctor: ['Dr. Mehra', 'Dr. Joshi'] }
+    ];
+
+    const hospitalSelect = document.getElementById('hospital');
+    const doctorSelect = document.getElementById('doctor');
+    const hospitalSearch = document.getElementById('hospitalSearch');
+    const timeSlotSelect = document.getElementById('timeSlot');
+
+    function populateHospitals(filteredHospitals = hospitals) {
+      hospitalSelect.innerHTML = '<option value="">Choose hospital</option>';
+      filteredHospitals.forEach(h => { const opt = document.createElement('option'); opt.value = h.name; opt.textContent = h.name; hospitalSelect.appendChild(opt); });
+    }
+
+    function populateDoctors() {
+      const hospitalName = hospitalSelect.value;
+      const hospital = hospitals.find(h => h.name === hospitalName);
+      doctorSelect.innerHTML = '<option value="">Choose doctor</option>';
+      if (hospital) { hospital.doctors.forEach(d => { const opt = document.createElement('option'); opt.value = d; opt.textContent = d; doctorSelect.appendChild(opt); }); }
+    }
+
+    function populateTimeSlots() {
+      timeSlotSelect.innerHTML = '<option value="">Choose time</option>';
+      const slots = ["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"];
+      slots.forEach(s => { const opt = document.createElement('option'); opt.value = s; opt.textContent = s; timeSlotSelect.appendChild(opt); });
+    }
+
+    hospitalSearch.addEventListener('input', async () => {
+      const val = hospitalSearch.value.toLowerCase();
+      const filtered = hospitals.filter(h => h.name.toLowerCase().includes(val) || h.city.toLowerCase().includes(val));
+      populateHospitals(filtered);
+      populateDoctors();
+      if (filtered.length > 0) {
+        const city = filtered[0].city;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${city}`);
+          const data = await res.json();
+          if (data.length > 0) { const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon); map.setView([lat, lon], 12); }
+        } catch (err) { console.log(err); }
+      }
+    });
+
+    function updatePreview() {
+      previewContent.innerHTML = `
+      <strong>Client:</strong> ${document.getElementById('clientName').value} (${document.getElementById('clientPhone').value})<br>
+      <strong>Pet:</strong> ${document.getElementById('dogName').value} (${document.getElementById('dogBreed').value})<br>
+      <strong>Hospital:</strong> ${hospitalSelect.value}<br>
+      <strong>Doctor:</strong> ${doctorSelect.value}<br>
+      <strong>Date:</strong> ${document.getElementById('date').value} <strong>Time:</strong> ${timeSlotSelect.value}<br>
+      <strong>Query Type:</strong> ${document.getElementById('queryType').value}<br>
+      <strong>Query:</strong> ${document.getElementById('query').value}`;
+    }
+
+    form.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', () => {
+      if (currentStep < steps.length - 1) { steps[currentStep].classList.remove('active'); currentStep++; steps[currentStep].classList.add('active'); updateProgress(); updatePreview(); }
+    }));
+    form.querySelectorAll('[data-prev]').forEach(btn => btn.addEventListener('click', () => {
+      if (currentStep > 0) { steps[currentStep].classList.remove('active'); currentStep--; steps[currentStep].classList.add('active'); updateProgress(); updatePreview(); }
+    }));
+
+    function updateProgress() {
+      const percent = ((currentStep) / (steps.length - 1)) * 100;
+      progressBar.style.width = percent + '%';
+      stepIndicator.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      updatePreview();
+      alert('Appointment booked! PDF will be downloaded.');
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('Danimal Doctor Appointment', 10, 10);
+      doc.text(previewContent.innerText, 10, 20);
+      doc.save(`${document.getElementById('clientName').value}_appointment.pdf`);
+      saveHistory();
+      form.reset(); currentStep = 0; steps.forEach(s => s.classList.remove('active')); steps[0].classList.add('active'); updateProgress();
+    });
+
+    function saveHistory() {
+      const entry = previewContent.innerText;
+      const history = JSON.parse(localStorage.getItem('appointmentHistory') || '[]');
+      history.push(entry);
+      localStorage.setItem('appointmentHistory', JSON.stringify(history));
+      loadHistory();
+    }
+
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem('appointmentHistory') || '[]');
+      historyList.innerHTML = '';
+      history.forEach((e) => { const li = document.createElement('li'); li.textContent = e; historyList.appendChild(li); });
+    }
+
+    clearHistory.addEventListener('click', () => { localStorage.removeItem('appointmentHistory'); loadHistory(); });
+    document.getElementById('openHistory').addEventListener('click', () => { historyPanel.style.display = historyPanel.style.display === 'none' ? 'block' : 'none'; });
+    document.getElementById('modeToggle').addEventListener('click', () => { document.body.classList.toggle('dark'); });
+
+    const map = L.map('map').setView([28.6139, 77.209], 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    hospitals.forEach(h => { L.marker([28.6139 + Math.random() / 50, 77.209 + Math.random() / 50]).addTo(map).bindPopup(`<b>${h.name}</b>`); });
+
+    populateHospitals(); populateDoctors(); populateTimeSlots(); updateProgress(); loadHistory();
+  </script>
+</body>
+
+</html>
